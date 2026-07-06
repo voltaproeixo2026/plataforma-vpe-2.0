@@ -47,12 +47,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Painel — Gestão de Negócio" },
-      { name: "description", content: "Painel completo para gerenciar CRM, tarefas, faturamento, conteúdo e produtividade — tudo em um só lugar." },
-      { property: "og:title", content: "Painel — Gestão de Negócio" },
-      { property: "og:description", content: "Painel completo para gerenciar CRM, tarefas, faturamento, conteúdo e produtividade." },
+      { title: "Volta Pro Eixo — Um espaço para empreendedoras" },
+      { name: "description", content: "Um lugar só seu pra organizar o que sua cabeça já sabe." },
+      { property: "og:title", content: "Volta Pro Eixo" },
+      { property: "og:description", content: "Um espaço para empreendedoras que pensam demais e fazem de menos." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+
     ],
     links: [
       { rel: "stylesheet", href: appCss },
