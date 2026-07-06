@@ -14,7 +14,483 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      actions: {
+        Row: {
+          created_at: string
+          date: string | null
+          id: string
+          name: string
+          next_opportunities: string | null
+          people_closed: number | null
+          people_reached: number | null
+          revenue: number | null
+          type: string
+          user_id: string
+          what_to_improve: string | null
+          what_worked: string | null
+        }
+        Insert: {
+          created_at?: string
+          date?: string | null
+          id?: string
+          name: string
+          next_opportunities?: string | null
+          people_closed?: number | null
+          people_reached?: number | null
+          revenue?: number | null
+          type?: string
+          user_id: string
+          what_to_improve?: string | null
+          what_worked?: string | null
+        }
+        Update: {
+          created_at?: string
+          date?: string | null
+          id?: string
+          name?: string
+          next_opportunities?: string | null
+          people_closed?: number | null
+          people_reached?: number | null
+          revenue?: number | null
+          type?: string
+          user_id?: string
+          what_to_improve?: string | null
+          what_worked?: string | null
+        }
+        Relationships: []
+      }
+      calendar_events: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          notes: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          id?: string
+          notes?: string | null
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          notes?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      contacts: {
+        Row: {
+          call_date: string | null
+          call_time: string | null
+          comum: string[] | null
+          created_at: string
+          email: string | null
+          id: string
+          instagram: string | null
+          name: string
+          next_action: string | null
+          notes: string | null
+          origem: string | null
+          status: string
+          user_id: string
+          whatsapp: string | null
+        }
+        Insert: {
+          call_date?: string | null
+          call_time?: string | null
+          comum?: string[] | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          instagram?: string | null
+          name: string
+          next_action?: string | null
+          notes?: string | null
+          origem?: string | null
+          status?: string
+          user_id: string
+          whatsapp?: string | null
+        }
+        Update: {
+          call_date?: string | null
+          call_time?: string | null
+          comum?: string[] | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          instagram?: string | null
+          name?: string
+          next_action?: string | null
+          notes?: string | null
+          origem?: string | null
+          status?: string
+          user_id?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      content_cards: {
+        Row: {
+          created_at: string
+          format: string
+          id: string
+          notes: string | null
+          publish_date: string | null
+          status: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          format?: string
+          id?: string
+          notes?: string | null
+          publish_date?: string | null
+          status?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          format?: string
+          id?: string
+          notes?: string | null
+          publish_date?: string | null
+          status?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      fat_entries: {
+        Row: {
+          category: string
+          created_at: string
+          date: string
+          description: string
+          id: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          date: string
+          description: string
+          id?: string
+          user_id: string
+          value: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          date?: string
+          description?: string
+          id?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: []
+      }
+      fat_meta: {
+        Row: {
+          id: string
+          month_ref: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          id?: string
+          month_ref: string
+          user_id: string
+          value?: number
+        }
+        Update: {
+          id?: string
+          month_ref?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: []
+      }
+      funnels: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          steps: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          steps?: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          steps?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
+      intentions: {
+        Row: {
+          created_at: string
+          id: string
+          month_ref: string
+          text: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          month_ref: string
+          text: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          month_ref?: string
+          text?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      objectives: {
+        Row: {
+          category: string
+          created_at: string
+          done: boolean
+          due_date: string | null
+          id: string
+          month_ref: string
+          text: string
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          done?: boolean
+          due_date?: string | null
+          id?: string
+          month_ref: string
+          text: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          done?: boolean
+          due_date?: string | null
+          id?: string
+          month_ref?: string
+          text?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          cycle_length: number | null
+          display_name: string | null
+          id: string
+          last_cycle_start: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          cycle_length?: number | null
+          display_name?: string | null
+          id: string
+          last_cycle_start?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          cycle_length?: number | null
+          display_name?: string | null
+          id?: string
+          last_cycle_start?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      sheets_config: {
+        Row: {
+          embed_url: string
+          height: number
+          id: string
+          name: string
+          updated_at: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          embed_url: string
+          height?: number
+          id?: string
+          name?: string
+          updated_at?: string
+          url: string
+          user_id: string
+        }
+        Update: {
+          embed_url?: string
+          height?: number
+          id?: string
+          name?: string
+          updated_at?: string
+          url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ss_config: {
+        Row: {
+          id: string
+          meta_day: number
+          meta_week_reun: number
+          taxa: number
+          ticket: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          meta_day?: number
+          meta_week_reun?: number
+          taxa?: number
+          ticket?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          meta_day?: number
+          meta_week_reun?: number
+          taxa?: number
+          ticket?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ss_counts: {
+        Row: {
+          abordagem: number
+          date: string
+          id: string
+          resposta: number
+          reuniao: number
+          user_id: string
+        }
+        Insert: {
+          abordagem?: number
+          date: string
+          id?: string
+          resposta?: number
+          reuniao?: number
+          user_id: string
+        }
+        Update: {
+          abordagem?: number
+          date?: string
+          id?: string
+          resposta?: number
+          reuniao?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          category: string
+          created_at: string
+          date: string
+          done: boolean
+          id: string
+          notes: string | null
+          priority: string
+          text: string
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          date: string
+          done?: boolean
+          id?: string
+          notes?: string | null
+          priority?: string
+          text: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          date?: string
+          done?: boolean
+          id?: string
+          notes?: string | null
+          priority?: string
+          text?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      time_logs: {
+        Row: {
+          activity: string
+          category: string
+          created_at: string
+          date: string
+          id: string
+          minutes: number
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          activity: string
+          category?: string
+          created_at?: string
+          date: string
+          id?: string
+          minutes: number
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          activity?: string
+          category?: string
+          created_at?: string
+          date?: string
+          id?: string
+          minutes?: number
+          notes?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
