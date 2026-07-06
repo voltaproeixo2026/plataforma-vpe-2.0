@@ -29,7 +29,7 @@ function ResetPasswordPage() {
     const { error } = await supabase.auth.updateUser({ password: pwd });
     setBusy(false);
     if (error) toast.error(error.message);
-    else { toast.success("Senha atualizada"); nav({ to: "/" }); }
+    else { toast.success("Senha atualizada"); nav({ to: "/dashboard" }); }
   };
 
   return (

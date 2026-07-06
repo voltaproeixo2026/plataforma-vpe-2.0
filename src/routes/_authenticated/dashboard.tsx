@@ -6,7 +6,7 @@ import { PageHeader, MetricCard, ProgressBar, SectionTitle } from "@/components/
 import { greeting, fmtDateLong, todayISO, monthRef, getMonday, addDays, fmtBRL } from "@/lib/biz";
 import { CycleWelcomeCard } from "@/components/CycleWelcomeCard";
 
-export const Route = createFileRoute("/_authenticated/")({
+export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Visão Geral — Painel" }] }),
   component: HomePage,
 });

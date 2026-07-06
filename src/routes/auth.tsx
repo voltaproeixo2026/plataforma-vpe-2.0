@@ -23,7 +23,7 @@ function AuthPage() {
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  useEffect(() => { if (!loading && user) nav({ to: "/" }); }, [user, loading, nav]);
+  useEffect(() => { if (!loading && user) nav({ to: "/dashboard" }); }, [user, loading, nav]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +32,7 @@ function AuthPage() {
       if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({ email, password: pwd });
         if (error) throw error;
-        nav({ to: "/" });
+        nav({ to: "/dashboard" });
       } else if (mode === "signup") {
         const { error } = await supabase.auth.signUp({
           email, password: pwd,
@@ -116,7 +116,7 @@ function AuthPage() {
           </div>
         )}
         <div className="mt-6 text-center">
-          <Link to="/" className="text-[11px] font-mono text-bg-tertiary/50 hover:text-bg-tertiary">← início</Link>
+          <Link to="/dashboard" className="text-[11px] font-mono text-bg-tertiary/50 hover:text-bg-tertiary">← início</Link>
         </div>
       </div>
     </div>
