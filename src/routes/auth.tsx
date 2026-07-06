@@ -61,8 +61,8 @@ function AuthPage() {
     <div className="min-h-screen bg-dark text-bg-primary flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="font-display text-5xl">Painel<span className="text-terracota">.</span></div>
-          <div className="label-mono mt-2 text-bg-tertiary/70">Gestão de negócio</div>
+          <div className="font-display text-5xl">Volta Pro Eixo<span className="text-terracota">.</span></div>
+          <div className="label-mono mt-2 text-bg-tertiary/70">Um espaço para empreendedoras</div>
         </div>
 
         <div className="flex gap-1 bg-white/5 rounded-lg p-1 mb-5">
