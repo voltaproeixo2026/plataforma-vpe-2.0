@@ -91,50 +91,65 @@ export type Database = {
       }
       contacts: {
         Row: {
+          acionado_em: string | null
           call_date: string | null
           call_time: string | null
           comum: string[] | null
           created_at: string
           email: string | null
+          follow_up_date: string | null
+          follow_up_objective: string | null
           id: string
           instagram: string | null
           name: string
           next_action: string | null
           notes: string | null
           origem: string | null
+          prospeccao: string | null
           status: string
+          temperatura: string | null
           user_id: string
           whatsapp: string | null
         }
         Insert: {
+          acionado_em?: string | null
           call_date?: string | null
           call_time?: string | null
           comum?: string[] | null
           created_at?: string
           email?: string | null
+          follow_up_date?: string | null
+          follow_up_objective?: string | null
           id?: string
           instagram?: string | null
           name: string
           next_action?: string | null
           notes?: string | null
           origem?: string | null
+          prospeccao?: string | null
           status?: string
+          temperatura?: string | null
           user_id: string
           whatsapp?: string | null
         }
         Update: {
+          acionado_em?: string | null
           call_date?: string | null
           call_time?: string | null
           comum?: string[] | null
           created_at?: string
           email?: string | null
+          follow_up_date?: string | null
+          follow_up_objective?: string | null
           id?: string
           instagram?: string | null
           name?: string
           next_action?: string | null
           notes?: string | null
           origem?: string | null
+          prospeccao?: string | null
           status?: string
+          temperatura?: string | null
           user_id?: string
           whatsapp?: string | null
         }
@@ -143,7 +158,10 @@ export type Database = {
       content_cards: {
         Row: {
           created_at: string
+          desenvolvimento: string | null
+          etapa: string | null
           format: string
+          funil: string | null
           id: string
           notes: string | null
           publish_date: string | null
@@ -153,7 +171,10 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          desenvolvimento?: string | null
+          etapa?: string | null
           format?: string
+          funil?: string | null
           id?: string
           notes?: string | null
           publish_date?: string | null
@@ -163,12 +184,54 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          desenvolvimento?: string | null
+          etapa?: string | null
           format?: string
+          funil?: string | null
           id?: string
           notes?: string | null
           publish_date?: string | null
           status?: string
           title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      cycle_entries: {
+        Row: {
+          created_at: string
+          creativity: number | null
+          cycle_day: number | null
+          cycle_length: number | null
+          date: string
+          emotion_scale: number | null
+          id: string
+          keyword: string | null
+          note: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          creativity?: number | null
+          cycle_day?: number | null
+          cycle_length?: number | null
+          date: string
+          emotion_scale?: number | null
+          id?: string
+          keyword?: string | null
+          note?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          creativity?: number | null
+          cycle_day?: number | null
+          cycle_length?: number | null
+          date?: string
+          emotion_scale?: number | null
+          id?: string
+          keyword?: string | null
+          note?: string | null
           user_id?: string
         }
         Relationships: []
@@ -226,27 +289,33 @@ export type Database = {
       }
       funnels: {
         Row: {
+          converted: number | null
           created_at: string
           description: string | null
           id: string
           name: string
           steps: Json
+          tested: boolean | null
           user_id: string
         }
         Insert: {
+          converted?: number | null
           created_at?: string
           description?: string | null
           id?: string
           name: string
           steps?: Json
+          tested?: boolean | null
           user_id: string
         }
         Update: {
+          converted?: number | null
           created_at?: string
           description?: string | null
           id?: string
           name?: string
           steps?: Json
+          tested?: boolean | null
           user_id?: string
         }
         Relationships: []
@@ -428,6 +497,7 @@ export type Database = {
           created_at: string
           date: string
           done: boolean
+          execution_status: string | null
           id: string
           notes: string | null
           priority: string
@@ -439,6 +509,7 @@ export type Database = {
           created_at?: string
           date: string
           done?: boolean
+          execution_status?: string | null
           id?: string
           notes?: string | null
           priority?: string
@@ -450,6 +521,7 @@ export type Database = {
           created_at?: string
           date?: string
           done?: boolean
+          execution_status?: string | null
           id?: string
           notes?: string | null
           priority?: string
