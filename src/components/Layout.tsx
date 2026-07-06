@@ -101,8 +101,8 @@ export function AppShell({ children, uid }: { children: React.ReactNode; uid: st
     <div className="min-h-screen flex bg-bg-primary">
       <aside className="hidden md:flex flex-col w-56 bg-dark text-bg-primary fixed inset-y-0 left-0">
         <div className="px-5 py-6">
-          <div className="font-display text-2xl">Painel<span className="text-terracota">.</span></div>
-          <div className="label-mono text-bg-tertiary/60">Gestão de negócio</div>
+          <div className="font-display text-2xl">Volta Pro Eixo<span className="text-terracota">.</span></div>
+          <div className="label-mono text-bg-tertiary/60">Um espaço para empreendedoras</div>
         </div>
         <nav className="flex-1 overflow-y-auto pb-2"><NavLinks /></nav>
         <UserBadge />
@@ -113,7 +113,7 @@ export function AppShell({ children, uid }: { children: React.ReactNode; uid: st
       </aside>
 
       <header className="md:hidden fixed top-0 inset-x-0 h-14 bg-dark text-bg-primary flex items-center justify-between px-4 z-40">
-        <div className="font-display text-xl">Painel<span className="text-terracota">.</span></div>
+        <div className="font-display text-xl">Volta Pro Eixo<span className="text-terracota">.</span></div>
         <button onClick={() => setOpenMobile(true)}><Menu size={22} /></button>
       </header>
 
