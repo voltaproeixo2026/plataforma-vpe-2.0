@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const sections = [
   { label: "Principal", items: [
-    { to: "/", label: "Visão Geral", icon: Home },
+    { to: "/dashboard", label: "Visão Geral", icon: Home },
     { to: "/tarefas", label: "Tarefas", icon: CheckSquare },
     { to: "/calendario", label: "Calendário", icon: Calendar },
   ]},
@@ -34,7 +34,7 @@ const sections = [
 ] as const;
 
 const mobileItems = [
-  { to: "/", label: "Home", icon: Home },
+  { to: "/dashboard", label: "Home", icon: Home },
   { to: "/tarefas", label: "Tarefas", icon: CheckSquare },
   { to: "/crm", label: "CRM", icon: Users },
   { to: "/social-selling", label: "Abord.", icon: MessageCircle },
