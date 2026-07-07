@@ -1,10 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { Pencil, Check, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { PageHeader, MetricCard, ProgressBar, SectionTitle } from "@/components/ui-custom";
 import { greeting, fmtDateLong, todayISO, monthRef, getMonday, addDays, fmtBRL } from "@/lib/biz";
 import { CycleWelcomeCard } from "@/components/CycleWelcomeCard";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Visão Geral — Painel" }] }),
@@ -14,10 +17,14 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 function HomePage() {
   const { user } = useAuth();
   const uid = user!.id;
+  const qc = useQueryClient();
   const today = todayISO();
   const mref = monthRef();
   const monday = getMonday(new Date());
   const sunday = addDays(monday, 6);
+  const [editingName, setEditingName] = useState(false);
+  const [nameDraft, setNameDraft] = useState("");
+  const [savingName, setSavingName] = useState(false);
 
   const { data: profile } = useQuery({
     queryKey: ["profile-name", uid],
@@ -27,6 +34,25 @@ function HomePage() {
     },
   });
   const g = greeting(profile?.display_name);
+
+  const startEdit = () => {
+    setNameDraft(profile?.display_name ?? "");
+    setEditingName(true);
+  };
+  const saveName = async () => {
+    const clean = nameDraft.trim();
+    if (!clean) { toast.error("Digite um nome"); return; }
+    setSavingName(true);
+    const { error } = await supabase.from("profiles").update({ display_name: clean }).eq("id", uid);
+    setSavingName(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Nome atualizado");
+    setEditingName(false);
+    qc.invalidateQueries({ queryKey: ["profile-name", uid] });
+    qc.invalidateQueries({ queryKey: ["profile-header", uid] });
+    qc.invalidateQueries({ queryKey: ["profile-edit", uid] });
+  };
+
 
   const { data } = useQuery({
     queryKey: ["home", uid],
@@ -62,7 +88,35 @@ function HomePage() {
 
   return (
     <div>
-      <PageHeader title={`${g.text} ${g.emoji}`} subtitle={fmtDateLong(new Date())} />
+      <div className="mb-6">
+        {editingName ? (
+          <div className="flex items-center gap-2 flex-wrap">
+            <input
+              autoFocus
+              value={nameDraft}
+              onChange={(e) => setNameDraft(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") saveName(); if (e.key === "Escape") setEditingName(false); }}
+              placeholder="Como quer ser chamada?"
+              className="font-display text-2xl md:text-3xl bg-transparent border-b border-terracota focus:outline-none px-1 py-1 min-w-0 flex-1 max-w-md"
+            />
+            <button onClick={saveName} disabled={savingName} className="p-2 rounded-lg bg-terracota text-bg-primary hover:bg-terracota-light transition disabled:opacity-60">
+              <Check size={16} />
+            </button>
+            <button onClick={() => setEditingName(false)} className="p-2 rounded-lg border border-border text-text-secondary hover:bg-bg-secondary transition">
+              <X size={16} />
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 flex-wrap">
+            <h1 className="font-display text-2xl md:text-3xl">{g.text} {g.emoji}</h1>
+            <button onClick={startEdit} title="Personalizar nome" className="p-1.5 rounded-md text-text-tertiary hover:text-terracota hover:bg-bg-secondary transition">
+              <Pencil size={14} />
+            </button>
+          </div>
+        )}
+        <div className="text-sm text-text-tertiary font-mono mt-1">{fmtDateLong(new Date())}</div>
+      </div>
+
 
       <CycleWelcomeCard uid={uid} />
 
