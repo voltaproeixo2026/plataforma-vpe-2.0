@@ -17,10 +17,14 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 function HomePage() {
   const { user } = useAuth();
   const uid = user!.id;
+  const qc = useQueryClient();
   const today = todayISO();
   const mref = monthRef();
   const monday = getMonday(new Date());
   const sunday = addDays(monday, 6);
+  const [editingName, setEditingName] = useState(false);
+  const [nameDraft, setNameDraft] = useState("");
+  const [savingName, setSavingName] = useState(false);
 
   const { data: profile } = useQuery({
     queryKey: ["profile-name", uid],
@@ -30,6 +34,25 @@ function HomePage() {
     },
   });
   const g = greeting(profile?.display_name);
+
+  const startEdit = () => {
+    setNameDraft(profile?.display_name ?? "");
+    setEditingName(true);
+  };
+  const saveName = async () => {
+    const clean = nameDraft.trim();
+    if (!clean) { toast.error("Digite um nome"); return; }
+    setSavingName(true);
+    const { error } = await supabase.from("profiles").update({ display_name: clean }).eq("id", uid);
+    setSavingName(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Nome atualizado");
+    setEditingName(false);
+    qc.invalidateQueries({ queryKey: ["profile-name", uid] });
+    qc.invalidateQueries({ queryKey: ["profile-header", uid] });
+    qc.invalidateQueries({ queryKey: ["profile-edit", uid] });
+  };
+
 
   const { data } = useQuery({
     queryKey: ["home", uid],
