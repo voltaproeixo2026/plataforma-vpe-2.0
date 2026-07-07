@@ -88,7 +88,35 @@ function HomePage() {
 
   return (
     <div>
-      <PageHeader title={`${g.text} ${g.emoji}`} subtitle={fmtDateLong(new Date())} />
+      <div className="mb-6">
+        {editingName ? (
+          <div className="flex items-center gap-2 flex-wrap">
+            <input
+              autoFocus
+              value={nameDraft}
+              onChange={(e) => setNameDraft(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") saveName(); if (e.key === "Escape") setEditingName(false); }}
+              placeholder="Como quer ser chamada?"
+              className="font-display text-2xl md:text-3xl bg-transparent border-b border-terracota focus:outline-none px-1 py-1 min-w-0 flex-1 max-w-md"
+            />
+            <button onClick={saveName} disabled={savingName} className="p-2 rounded-lg bg-terracota text-bg-primary hover:bg-terracota-light transition disabled:opacity-60">
+              <Check size={16} />
+            </button>
+            <button onClick={() => setEditingName(false)} className="p-2 rounded-lg border border-border text-text-secondary hover:bg-bg-secondary transition">
+              <X size={16} />
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 flex-wrap">
+            <h1 className="font-display text-2xl md:text-3xl">{g.text} {g.emoji}</h1>
+            <button onClick={startEdit} title="Personalizar nome" className="p-1.5 rounded-md text-text-tertiary hover:text-terracota hover:bg-bg-secondary transition">
+              <Pencil size={14} />
+            </button>
+          </div>
+        )}
+        <div className="text-sm text-text-tertiary font-mono mt-1">{fmtDateLong(new Date())}</div>
+      </div>
+
 
       <CycleWelcomeCard uid={uid} />
 
