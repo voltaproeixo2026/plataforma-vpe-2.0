@@ -1,10 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { Pencil, Check, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { PageHeader, MetricCard, ProgressBar, SectionTitle } from "@/components/ui-custom";
 import { greeting, fmtDateLong, todayISO, monthRef, getMonday, addDays, fmtBRL } from "@/lib/biz";
 import { CycleWelcomeCard } from "@/components/CycleWelcomeCard";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Visão Geral — Painel" }] }),
