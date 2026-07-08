@@ -65,15 +65,6 @@ function AuthPage() {
           <div className="label-mono mt-2 text-bg-tertiary/70">Um espaço para empreendedoras</div>
         </div>
 
-        <div className="flex gap-1 bg-white/5 rounded-lg p-1 mb-5">
-          {(["signin", "signup", "forgot"] as Mode[]).map(m => (
-            <button key={m} type="button" onClick={() => { setMode(m); setErr(null); setMsg(null); }}
-              className={`flex-1 py-1.5 rounded text-xs font-mono transition ${mode === m ? "bg-terracota text-bg-primary" : "text-bg-tertiary/70"}`}>
-              {m === "signin" ? "Entrar" : m === "signup" ? "Cadastro" : "Esqueci"}
-            </button>
-          ))}
-        </div>
-
         <h1 className="font-display text-2xl mb-4">{title}</h1>
 
         <form onSubmit={submit} className="space-y-4">
@@ -109,7 +100,7 @@ function AuthPage() {
           </button>
         </form>
 
-        {mode === "signin" && (
+        {false && (
           <div className="mt-4 text-center text-xs font-mono text-bg-tertiary/60">
             Não tem conta?{" "}
             <button onClick={() => setMode("signup")} className="text-terracota">Criar agora</button>

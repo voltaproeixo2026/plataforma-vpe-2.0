@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { PageHeader, SectionTitle } from "@/components/ui-custom";
 import { cycleDayFromStart } from "@/utils/cyclePhase";
 import { PhaseCards } from "@/components/PhaseCards";
+import { CycleEvolutionChart } from "@/components/CycleEvolutionChart";
 import { todayISO } from "@/lib/biz";
 import { toast } from "sonner";
 
@@ -92,6 +93,13 @@ function CicloPage() {
       <PageHeader title="Ciclo 🌙" subtitle="Lua, ciclo e o que se move por dentro" />
 
       <div className="mb-6"><PhaseCards cycleDay={cycleDay ?? undefined} cycleLength={cycleLength} /></div>
+
+      <CycleEvolutionChart
+        userId={uid}
+        days={30}
+        lastCycleStart={profile?.last_cycle_start ?? null}
+        cycleLength={cycleLength}
+      />
 
       <div className="bg-bg-secondary border border-border rounded-2xl p-6 mb-6">
         <SectionTitle>Configuração</SectionTitle>
