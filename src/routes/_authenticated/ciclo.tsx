@@ -22,6 +22,7 @@ function CicloPage() {
 
   const [cycleLength, setCycleLength] = useState(28);
   const [lastStart, setLastStart] = useState("");
+  const [historyDays, setHistoryDays] = useState(30);
   const [emotionScale, setEmotionScale] = useState(5);
   const [keyword, setKeyword] = useState("");
   const [creativity, setCreativity] = useState(5);
@@ -29,6 +30,8 @@ function CicloPage() {
   const [saving, setSaving] = useState(false);
   const [savingStart, setSavingStart] = useState(false);
   const [entryDate, setEntryDate] = useState(todayISO());
+
+  const periodOptions = [7, 30, 90, 180, 365];
 
   const { data: profile } = useQuery({
     queryKey: ["profile-cycle", uid],
@@ -94,12 +97,32 @@ function CicloPage() {
 
       <div className="mb-6"><PhaseCards cycleDay={cycleDay ?? undefined} cycleLength={cycleLength} /></div>
 
-      <CycleEvolutionChart
-        userId={uid}
-        days={30}
-        lastCycleStart={profile?.last_cycle_start ?? null}
-        cycleLength={cycleLength}
-      />
+      <div className="bg-bg-secondary border border-border rounded-2xl p-6 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+          <SectionTitle>Evolução do ciclo</SectionTitle>
+          <div className="flex flex-wrap gap-2">
+            {periodOptions.map((d) => (
+              <button
+                key={d}
+                onClick={() => setHistoryDays(d)}
+                className={`px-3 py-1.5 rounded-lg font-mono text-xs border transition-colors ${
+                  historyDays === d
+                    ? "bg-terracota border-terracota text-bg-primary"
+                    : "border-border hover:border-terracota/60 text-text-secondary"
+                }`}
+              >
+                {d} dias
+              </button>
+            ))}
+          </div>
+        </div>
+        <CycleEvolutionChart
+          userId={uid}
+          days={historyDays}
+          lastCycleStart={profile?.last_cycle_start ?? null}
+          cycleLength={cycleLength}
+        />
+      </div>
 
       <div className="bg-bg-secondary border border-border rounded-2xl p-6 mb-6">
         <SectionTitle>Configuração</SectionTitle>

@@ -5,7 +5,6 @@ import {
   ReferenceLine, Legend,
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
-import { SectionTitle } from "@/components/ui-custom";
 import { cycleDayFromStart, getCyclePhaseForDay } from "@/utils/cyclePhase";
 
 type Props = {
@@ -77,8 +76,7 @@ export function CycleEvolutionChart({ userId, days = 30, lastCycleStart, cycleLe
   const hasAny = chartData.some(d => d.emotion !== null || d.creativity !== null);
 
   return (
-    <div className="bg-bg-secondary border border-border rounded-2xl p-6 mb-6">
-      <SectionTitle>Evolução — últimos {days} dias</SectionTitle>
+    <div>
       {!hasAny ? (
         <div className="text-sm text-text-tertiary py-8 text-center">
           Sem registros no período. Salve algum diário para começar a ver sua evolução.
