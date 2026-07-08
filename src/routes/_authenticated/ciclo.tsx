@@ -95,6 +95,8 @@ function CicloPage() {
     <div>
       <PageHeader title="Ciclo 🌙" subtitle="Lua, ciclo e o que se move por dentro" />
 
+      <div className="mb-6"><PhaseCards cycleDay={cycleDay ?? undefined} cycleLength={cycleLength} /></div>
+
       <div className="bg-bg-secondary border border-border rounded-2xl p-6 mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
           <SectionTitle>Evolução do ciclo</SectionTitle>
