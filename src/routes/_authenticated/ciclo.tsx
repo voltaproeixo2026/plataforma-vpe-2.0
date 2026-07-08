@@ -94,6 +94,13 @@ function CicloPage() {
 
       <div className="mb-6"><PhaseCards cycleDay={cycleDay ?? undefined} cycleLength={cycleLength} /></div>
 
+      <CycleEvolutionChart
+        userId={uid}
+        days={30}
+        lastCycleStart={profile?.last_cycle_start ?? null}
+        cycleLength={cycleLength}
+      />
+
       <div className="bg-bg-secondary border border-border rounded-2xl p-6 mb-6">
         <SectionTitle>Configuração</SectionTitle>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
