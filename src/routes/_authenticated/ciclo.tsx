@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { PageHeader, SectionTitle } from "@/components/ui-custom";
 import { cycleDayFromStart } from "@/utils/cyclePhase";
 import { PhaseCards } from "@/components/PhaseCards";
+import { CycleEvolutionChart } from "@/components/CycleEvolutionChart";
 import { todayISO } from "@/lib/biz";
 import { toast } from "sonner";
 
