@@ -5,7 +5,6 @@ import {
   ReferenceLine, Legend,
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
-import { SectionTitle } from "@/components/ui-custom";
 import { cycleDayFromStart, getCyclePhaseForDay } from "@/utils/cyclePhase";
 
 type Props = {
