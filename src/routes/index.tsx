@@ -27,8 +27,7 @@ function Landing() {
           Um lugar só seu pra organizar o que sua cabeça já sabe.
         </p>
         <div className="mt-10 flex gap-3 justify-center">
-          <Link to="/auth" className="px-6 py-3 rounded-lg bg-terracota hover:bg-terracota-light text-bg-primary font-mono">Criar conta grátis</Link>
-          <Link to="/auth" className="px-6 py-3 rounded-lg border border-border font-mono">Entrar</Link>
+          <Link to="/auth" className="px-6 py-3 rounded-lg bg-terracota hover:bg-terracota-light text-bg-primary font-mono">Entrar</Link>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mt-20 text-left">
           {[
