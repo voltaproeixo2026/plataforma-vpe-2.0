@@ -22,6 +22,7 @@ function CicloPage() {
 
   const [cycleLength, setCycleLength] = useState(28);
   const [lastStart, setLastStart] = useState("");
+  const [historyDays, setHistoryDays] = useState(30);
   const [emotionScale, setEmotionScale] = useState(5);
   const [keyword, setKeyword] = useState("");
   const [creativity, setCreativity] = useState(5);
@@ -29,6 +30,8 @@ function CicloPage() {
   const [saving, setSaving] = useState(false);
   const [savingStart, setSavingStart] = useState(false);
   const [entryDate, setEntryDate] = useState(todayISO());
+
+  const periodOptions = [7, 30, 90, 180, 365];
 
   const { data: profile } = useQuery({
     queryKey: ["profile-cycle", uid],
