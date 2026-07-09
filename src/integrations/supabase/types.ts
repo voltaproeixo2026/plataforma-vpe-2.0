@@ -59,6 +59,63 @@ export type Database = {
         }
         Relationships: []
       }
+      arsenal_entries: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          raw_content: string
+          tags: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          raw_content?: string
+          tags?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          raw_content?: string
+          tags?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      autenticidade_maps: {
+        Row: {
+          created_at: string
+          current_phase: number
+          data: Json
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_phase?: number
+          data?: Json
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_phase?: number
+          data?: Json
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       calendar_events: {
         Row: {
           created_at: string
@@ -487,6 +544,36 @@ export type Database = {
           id?: string
           resposta?: number
           reuniao?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      stories: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          story_type: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          story_type?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          story_type?: string
+          title?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
