@@ -7,6 +7,11 @@ import { PageHeader, Btn, Modal, Field, inputCls, Tag, MetricCard, Chip } from "
 import { CONTENT_FORMATS, CONTENT_STATUSES, CONTENT_FUNIS, CONTENT_ETAPAS, monthRef, monthRange } from "@/lib/biz";
 import { X, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
+import { AutenticidadeMap } from "@/components/content/AutenticidadeMap";
+import { Arsenal } from "@/components/content/Arsenal";
+import { StoriesBank } from "@/components/content/StoriesBank";
+
+type Section = "planejamento" | "mapa" | "arsenal" | "historias";
 
 export const Route = createFileRoute("/_authenticated/conteudo")({
   head: () => ({ meta: [{ title: "Conteúdo — Painel" }] }),
@@ -17,6 +22,7 @@ function ContentPage() {
   const { user } = useAuth();
   const uid = user!.id;
   const qc = useQueryClient();
+  const [section, setSection] = useState<Section>("planejamento");
   const [tab, setTab] = useState<"cards" | "calendario">("cards");
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<any>(null);
@@ -24,6 +30,14 @@ function ContentPage() {
   const [funilFilter, setFunilFilter] = useState<string>("todos");
   const [etapaFilter, setEtapaFilter] = useState<string>("todos");
   const [mref, setMref] = useState(monthRef());
+
+  const SECTIONS: { key: Section; label: string }[] = [
+    { key: "planejamento", label: "📅 Planejamento" },
+    { key: "mapa", label: "🧭 Mapa da Autenticidade" },
+    { key: "arsenal", label: "🗂 Arsenal" },
+    { key: "historias", label: "📖 Banco de Histórias" },
+  ];
+
 
   const { data: cards = [] } = useQuery({
     queryKey: ["content", uid],
@@ -72,18 +86,45 @@ function ContentPage() {
   return (
     <div>
       <PageHeader title="Conteúdo">
-        <div className="flex gap-1 bg-bg-secondary rounded-lg p-1">
-          <button onClick={() => setTab("cards")} className={`px-3 py-1.5 rounded text-xs font-mono ${tab === "cards" ? "bg-dark text-bg-primary" : "text-text-secondary"}`}>Kanban</button>
-          <button onClick={() => setTab("calendario")} className={`px-3 py-1.5 rounded text-xs font-mono ${tab === "calendario" ? "bg-dark text-bg-primary" : "text-text-secondary"}`}>Calendário</button>
-        </div>
-        <Btn onClick={() => { setEditing(null); setInitialDate(""); setOpen(true); }}>+ Conteúdo</Btn>
+        {section === "planejamento" && (
+          <>
+            <div className="flex gap-1 bg-bg-secondary rounded-lg p-1">
+              <button onClick={() => setTab("cards")} className={`px-3 py-1.5 rounded text-xs font-mono ${tab === "cards" ? "bg-dark text-bg-primary" : "text-text-secondary"}`}>Kanban</button>
+              <button onClick={() => setTab("calendario")} className={`px-3 py-1.5 rounded text-xs font-mono ${tab === "calendario" ? "bg-dark text-bg-primary" : "text-text-secondary"}`}>Calendário</button>
+            </div>
+            <Btn onClick={() => { setEditing(null); setInitialDate(""); setOpen(true); }}>+ Conteúdo</Btn>
+          </>
+        )}
       </PageHeader>
 
+      <div className="flex gap-2 overflow-x-auto mb-5 border-b border-border">
+        {SECTIONS.map((s) => (
+          <button
+            key={s.key}
+            onClick={() => setSection(s.key)}
+            className={`px-4 py-2.5 text-sm font-mono whitespace-nowrap border-b-2 transition ${
+              section === s.key
+                ? "border-terracota text-terracota"
+                : "border-transparent text-text-secondary hover:text-text-primary"
+            }`}
+          >
+            {s.label}
+          </button>
+        ))}
+      </div>
+
+      {section === "mapa" && <AutenticidadeMap userId={uid} />}
+      {section === "arsenal" && <Arsenal userId={uid} />}
+      {section === "historias" && <StoriesBank userId={uid} />}
+
+      {section === "planejamento" && (
+        <>
       <div className="flex items-center gap-2 mb-4">
         <span className="label-mono">Mês:</span>
         <input type="month" className={`${inputCls} w-40`} value={mref} onChange={(e) => setMref(e.target.value)} />
         <span className="text-xs text-text-tertiary capitalize">{monthLabel}</span>
       </div>
+
 
       {tab === "cards" && (
         <>
@@ -177,6 +218,8 @@ function ContentPage() {
             })}
           </div>
         </div>
+      )}
+        </>
       )}
 
       {open && <ContentModal uid={uid} editing={editing} initialDate={initialDate} onClose={() => { setOpen(false); setInitialDate(""); }} onSaved={inv} />}
