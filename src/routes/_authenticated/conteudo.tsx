@@ -219,6 +219,8 @@ function ContentPage() {
           </div>
         </div>
       )}
+        </>
+      )}
 
       {open && <ContentModal uid={uid} editing={editing} initialDate={initialDate} onClose={() => { setOpen(false); setInitialDate(""); }} onSaved={inv} />}
     </div>
