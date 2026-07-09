@@ -7,6 +7,11 @@ import { PageHeader, Btn, Modal, Field, inputCls, Tag, MetricCard, Chip } from "
 import { CONTENT_FORMATS, CONTENT_STATUSES, CONTENT_FUNIS, CONTENT_ETAPAS, monthRef, monthRange } from "@/lib/biz";
 import { X, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
+import { AutenticidadeMap } from "@/components/content/AutenticidadeMap";
+import { Arsenal } from "@/components/content/Arsenal";
+import { StoriesBank } from "@/components/content/StoriesBank";
+
+type Section = "planejamento" | "mapa" | "arsenal" | "historias";
 
 export const Route = createFileRoute("/_authenticated/conteudo")({
   head: () => ({ meta: [{ title: "Conteúdo — Painel" }] }),
@@ -17,6 +22,7 @@ function ContentPage() {
   const { user } = useAuth();
   const uid = user!.id;
   const qc = useQueryClient();
+  const [section, setSection] = useState<Section>("planejamento");
   const [tab, setTab] = useState<"cards" | "calendario">("cards");
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<any>(null);
@@ -24,6 +30,14 @@ function ContentPage() {
   const [funilFilter, setFunilFilter] = useState<string>("todos");
   const [etapaFilter, setEtapaFilter] = useState<string>("todos");
   const [mref, setMref] = useState(monthRef());
+
+  const SECTIONS: { key: Section; label: string }[] = [
+    { key: "planejamento", label: "📅 Planejamento" },
+    { key: "mapa", label: "🧭 Mapa da Autenticidade" },
+    { key: "arsenal", label: "🗂 Arsenal" },
+    { key: "historias", label: "📖 Banco de Histórias" },
+  ];
+
 
   const { data: cards = [] } = useQuery({
     queryKey: ["content", uid],
