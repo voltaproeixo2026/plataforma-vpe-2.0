@@ -116,7 +116,7 @@ function ArsenalModal({ userId, editing, onClose, onSaved }: any) {
 
   const save = async () => {
     if (!raw.trim()) { toast.error("Escreva algum conteúdo"); return; }
-    const tags = tagsStr.split(",").map((s) => s.trim()).filter(Boolean);
+    const tags = tagsStr.split(",").map((s: string) => s.trim()).filter(Boolean);
     const payload = { category, raw_content: raw, tags };
     if (editing?.id) {
       await (supabase as any).from("arsenal_entries").update(payload).eq("id", editing.id);
