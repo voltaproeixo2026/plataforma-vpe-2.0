@@ -146,6 +146,42 @@ export type Database = {
         }
         Relationships: []
       }
+      ciclos: {
+        Row: {
+          created_at: string
+          data_fim: string | null
+          data_inicio: string
+          id: string
+          nome: string
+          reflexao: string | null
+          status: Database["public"]["Enums"]["ciclo_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data_fim?: string | null
+          data_inicio?: string
+          id?: string
+          nome: string
+          reflexao?: string | null
+          status?: Database["public"]["Enums"]["ciclo_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data_fim?: string | null
+          data_inicio?: string
+          id?: string
+          nome?: string
+          reflexao?: string | null
+          status?: Database["public"]["Enums"]["ciclo_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       contacts: {
         Row: {
           acionado_em: string | null
@@ -377,6 +413,39 @@ export type Database = {
         }
         Relationships: []
       }
+      intencoes: {
+        Row: {
+          created_at: string
+          descricao: string | null
+          id: string
+          periodo_fim: string | null
+          periodo_inicio: string
+          titulo: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          periodo_fim?: string | null
+          periodo_inicio?: string
+          titulo: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          periodo_fim?: string | null
+          periodo_inicio?: string
+          titulo?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       intentions: {
         Row: {
           created_at: string
@@ -460,6 +529,177 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      projetos: {
+        Row: {
+          created_at: string
+          descricao: string | null
+          horas_totais: number
+          id: string
+          intencao_id: string | null
+          percentual_conclusao: number
+          semana_id: string | null
+          status: Database["public"]["Enums"]["projeto_status"]
+          tipo_id: string
+          titulo: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          descricao?: string | null
+          horas_totais?: number
+          id?: string
+          intencao_id?: string | null
+          percentual_conclusao?: number
+          semana_id?: string | null
+          status?: Database["public"]["Enums"]["projeto_status"]
+          tipo_id: string
+          titulo: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          descricao?: string | null
+          horas_totais?: number
+          id?: string
+          intencao_id?: string | null
+          percentual_conclusao?: number
+          semana_id?: string | null
+          status?: Database["public"]["Enums"]["projeto_status"]
+          tipo_id?: string
+          titulo?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projetos_intencao_id_fkey"
+            columns: ["intencao_id"]
+            isOneToOne: false
+            referencedRelation: "intencoes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projetos_semana_id_fkey"
+            columns: ["semana_id"]
+            isOneToOne: false
+            referencedRelation: "semanas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projetos_tipo_id_fkey"
+            columns: ["tipo_id"]
+            isOneToOne: false
+            referencedRelation: "tipos_projeto"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      registros_tempo: {
+        Row: {
+          created_at: string
+          data: string
+          duracao_minutos: number
+          id: string
+          observacao: string | null
+          origem: Database["public"]["Enums"]["registro_origem"]
+          projeto_id: string
+          tipo_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data?: string
+          duracao_minutos: number
+          id?: string
+          observacao?: string | null
+          origem?: Database["public"]["Enums"]["registro_origem"]
+          projeto_id: string
+          tipo_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: string
+          duracao_minutos?: number
+          id?: string
+          observacao?: string | null
+          origem?: Database["public"]["Enums"]["registro_origem"]
+          projeto_id?: string
+          tipo_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registros_tempo_projeto_id_fkey"
+            columns: ["projeto_id"]
+            isOneToOne: false
+            referencedRelation: "projetos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registros_tempo_tipo_id_fkey"
+            columns: ["tipo_id"]
+            isOneToOne: false
+            referencedRelation: "tipos_projeto"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      semanas: {
+        Row: {
+          ciclo_id: string
+          created_at: string
+          data_fim: string
+          data_inicio: string
+          descanso: boolean
+          gerada_automaticamente: boolean
+          id: string
+          nome: string
+          ordem_no_ciclo: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ciclo_id: string
+          created_at?: string
+          data_fim: string
+          data_inicio: string
+          descanso?: boolean
+          gerada_automaticamente?: boolean
+          id?: string
+          nome: string
+          ordem_no_ciclo?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ciclo_id?: string
+          created_at?: string
+          data_fim?: string
+          data_inicio?: string
+          descanso?: boolean
+          gerada_automaticamente?: boolean
+          id?: string
+          nome?: string
+          ordem_no_ciclo?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "semanas_ciclo_id_fkey"
+            columns: ["ciclo_id"]
+            isOneToOne: false
+            referencedRelation: "ciclos"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sheets_config: {
         Row: {
@@ -578,6 +818,63 @@ export type Database = {
         }
         Relationships: []
       }
+      tarefas_projeto: {
+        Row: {
+          created_at: string
+          data: string | null
+          descricao: string | null
+          id: string
+          ordem: number
+          parent_id: string | null
+          projeto_id: string
+          status: Database["public"]["Enums"]["tarefa_status"]
+          titulo: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data?: string | null
+          descricao?: string | null
+          id?: string
+          ordem?: number
+          parent_id?: string | null
+          projeto_id: string
+          status?: Database["public"]["Enums"]["tarefa_status"]
+          titulo: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: string | null
+          descricao?: string | null
+          id?: string
+          ordem?: number
+          parent_id?: string | null
+          projeto_id?: string
+          status?: Database["public"]["Enums"]["tarefa_status"]
+          titulo?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tarefas_projeto_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "tarefas_projeto"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tarefas_projeto_projeto_id_fkey"
+            columns: ["projeto_id"]
+            isOneToOne: false
+            referencedRelation: "projetos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tasks: {
         Row: {
           category: string
@@ -650,15 +947,49 @@ export type Database = {
         }
         Relationships: []
       }
+      tipos_projeto: {
+        Row: {
+          cor: string | null
+          created_at: string
+          id: string
+          nome: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cor?: string | null
+          created_at?: string
+          id?: string
+          nome: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cor?: string | null
+          created_at?: string
+          id?: string
+          nome?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      recalc_projeto_horas: { Args: { _projeto: string }; Returns: undefined }
+      recalc_projeto_percentual: {
+        Args: { _projeto: string }
+        Returns: undefined
+      }
     }
     Enums: {
-      [_ in never]: never
+      ciclo_status: "ativo" | "concluido"
+      projeto_status: "planejamento" | "ativo" | "concluido" | "cancelado"
+      registro_origem: "manual" | "cronometro"
+      tarefa_status: "a_fazer" | "em_progresso" | "concluida" | "cancelada"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -785,6 +1116,11 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      ciclo_status: ["ativo", "concluido"],
+      projeto_status: ["planejamento", "ativo", "concluido", "cancelado"],
+      registro_origem: ["manual", "cronometro"],
+      tarefa_status: ["a_fazer", "em_progresso", "concluida", "cancelada"],
+    },
   },
 } as const
