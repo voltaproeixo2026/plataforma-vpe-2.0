@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useAuthUser } from "@/hooks/use-auth";
+import { useContext } from "react";
+import { AuthUserContext } from "@/hooks/use-auth";
+
 import { PageHeader } from "@/components/ui-custom";
 import { ensureSeedETickle } from "@/lib/atividades";
 import { CicloManager } from "@/components/atividades/CicloManager";
