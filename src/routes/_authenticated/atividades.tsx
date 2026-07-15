@@ -26,8 +26,10 @@ export const Route = createFileRoute("/_authenticated/atividades")({
 });
 
 function AtividadesPage() {
-  const user = useAuthUser();
+  const user = useContext(AuthUserContext);
+  if (!user) return null;
   const userId = user.id;
+
   const [tab, setTab] = useState<Tab>("projetos");
   const [projetoOpen, setProjetoOpen] = useState<string | null>(null);
 
