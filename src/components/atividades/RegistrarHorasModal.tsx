@@ -67,7 +67,7 @@ export function RegistrarHorasModal({ open, onClose, projetoId, userId, onSaved 
       data, duracao_minutos: ajusteMin, origem: "cronometro", observacao: obs || null,
     });
     setSaving(false);
-    if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
+    if (error) { toast.error("Erro"); return; }
     localStorage.removeItem(LS_KEY(projetoId));
     setCrono({ startedAt: 0, accumulated: 0, running: false });
     setConfirming(false); setObs(""); setAjusteMin(0);
@@ -76,14 +76,14 @@ export function RegistrarHorasModal({ open, onClose, projetoId, userId, onSaved 
 
   const salvarManual = async () => {
     const total = (horas || 0) * 60 + (minutos || 0);
-    if (total <= 0) { toast({ title: "Informe horas ou minutos", variant: "destructive" }); return; }
+    if (total <= 0) { toast.error("Informe horas ou minutos"); return; }
     setSaving(true);
     const { error } = await supabase.from("registros_tempo").insert({
       user_id: userId, projeto_id: projetoId, data,
       duracao_minutos: total, origem: "manual", observacao: obs || null,
     });
     setSaving(false);
-    if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
+    if (error) { toast.error("Erro"); return; }
     setHoras(0); setMinutos(0); setObs("");
     onSaved(); onClose();
   };
