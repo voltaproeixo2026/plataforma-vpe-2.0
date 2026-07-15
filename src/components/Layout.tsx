@@ -28,7 +28,9 @@ const sections = [
     { to: "/objetivos", label: "Objetivos", icon: Target },
     { to: "/conteudo", label: "Conteúdo", icon: Sparkles },
     { to: "/acoes", label: "Ações", icon: Rocket },
+    { to: "/atividades", label: "Atividades", icon: ListTodo },
   ]},
+
   { label: "Produtividade", items: [
     { to: "/tempo", label: "Registro de Tempo", icon: Clock },
   ]},
