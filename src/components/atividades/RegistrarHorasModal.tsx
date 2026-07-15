@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Modal, Field, inputCls, Btn } from "@/components/ui-custom";
 import { Play, Pause, Square } from "lucide-react";
 import { todayISO } from "@/lib/atividades";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 type Props = { open: boolean; onClose: () => void; projetoId: string; userId: string; onSaved: () => void };
 
