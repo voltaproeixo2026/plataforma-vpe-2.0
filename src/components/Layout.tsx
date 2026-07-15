@@ -2,8 +2,9 @@ import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Home, CheckSquare, Calendar, Users, Workflow, MessageCircle, DollarSign,
-  Target, Sparkles, Rocket, Clock, LogOut, Menu, Moon, RefreshCw, User,
+  Target, Sparkles, Rocket, Clock, LogOut, Menu, Moon, RefreshCw, User, ListTodo,
 } from "lucide-react";
+
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
