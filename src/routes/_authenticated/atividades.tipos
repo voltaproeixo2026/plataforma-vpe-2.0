@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, Link, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/lib/auth-context";
+import { useAuth } from "@/hooks/use-auth";
 import { CICLO_TAMANHO, ensureActiveCiclo, semanaAtualParaHoje } from "@/lib/atividades-helpers";
 import { useEffect } from "react";
 
