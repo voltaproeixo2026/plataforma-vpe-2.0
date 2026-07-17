@@ -167,7 +167,7 @@ export function CicloManager({ userId }: { userId: string }) {
         </div>
       )}
 
-      <Modal open={showGerar} onClose={() => setShowGerar(false)} title="Gerar próxima semana">
+      <Modal open={showGerar} onClose={() => setShowGerar(false)} title={modoManual ? "Nova semana" : "Gerar próxima semana"}>
         <Field label="Nome"><input className={inputCls} value={novoNome} onChange={e => setNovoNome(e.target.value)} /></Field>
         <div className="grid grid-cols-2 gap-3">
           <Field label="Início"><input type="date" className={inputCls} value={novoInicio} onChange={e => setNovoInicio(e.target.value)} /></Field>
