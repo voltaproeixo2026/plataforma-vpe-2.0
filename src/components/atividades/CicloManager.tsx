@@ -213,7 +213,7 @@ function CicloResumo({ cicloId, reflexao }: { cicloId: string; reflexao?: string
         });
         byTipo = Array.from(agg.entries()).map(([nome, mins]) => ({ nome, horas: Math.round(mins / 6) / 10 }));
       }
-      return { concl, canc, and, pct, byTipo };
+      return { concl, and, canc, byTipo };
     },
   });
   if (!data) return <div className="p-3 text-sm text-text-tertiary">Carregando...</div>;
