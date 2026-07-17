@@ -8,7 +8,7 @@ import { ensureDefaultTipos } from "@/lib/atividades-helpers";
 import { toast } from "sonner";
 import { X } from "lucide-react";
 
-export const Route = createFileRoute("/_app/atividades/tipos")({
+export const Route = createFileRoute("/_authenticated/atividades/semanas/tipos")({
   component: TiposPage,
 });
 
