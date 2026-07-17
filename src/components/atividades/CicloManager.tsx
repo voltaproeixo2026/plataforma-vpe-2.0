@@ -220,7 +220,6 @@ function CicloResumo({ cicloId, reflexao }: { cicloId: string; reflexao?: string
   return (
     <div className="p-3 grid gap-3 md:grid-cols-2 text-sm">
       <div><div className="label-mono">Projetos</div>{data.concl} concluídos · {data.canc} cancelados · {data.and} em andamento</div>
-      <div><div className="label-mono">% médio conclusão</div><span className="font-mono text-lg">{data.pct}%</span></div>
       <div className="md:col-span-2">
         <div className="label-mono mb-1">Horas por tipo</div>
         {data.byTipo.length === 0 ? <div className="text-text-tertiary text-xs">Sem registros</div> :
