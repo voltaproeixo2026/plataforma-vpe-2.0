@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/auth-context";
 import { PageHeader, EmptyState, Tag } from "@/components/ui-custom";
 import { TAREFA_STATUS } from "@/lib/atividades-helpers";
 
-export const Route = createFileRoute("/_app/atividades/agenda")({
+export const Route = createFileRoute("/_authenticated/atividades/agenda")({
   component: AgendaAtividadesPage,
 });
 
