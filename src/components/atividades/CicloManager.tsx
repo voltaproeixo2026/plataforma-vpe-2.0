@@ -56,16 +56,27 @@ export function CicloManager({ userId }: { userId: string }) {
     setNovoInicio(inicio);
     setNovoFim(addDays(inicio, 6));
     setDescanso(false);
+    setModoManual(false);
+    setShowGerar(true);
+  };
+
+  const openManual = () => {
+    setNovoNome(`Semana ${semanas.length + 1}`);
+    setNovoInicio(ciclo?.data_inicio || todayISO());
+    setNovoFim("");
+    setDescanso(false);
+    setModoManual(true);
     setShowGerar(true);
   };
 
   const gerar = async () => {
     if (!cicloId) return;
     if (semanas.length >= CICLO_SIZE) { toast.error("Ciclo já tem 12 semanas"); return; }
+    if (!novoInicio || !novoFim) { toast.error("Informe início e fim"); return; }
     const { error } = await supabase.from("semanas").insert({
       user_id: userId, ciclo_id: cicloId, nome: novoNome,
       data_inicio: novoInicio, data_fim: novoFim,
-      ordem_no_ciclo: semanas.length + 1, descanso, gerada_automaticamente: true,
+      ordem_no_ciclo: semanas.length + 1, descanso, gerada_automaticamente: !modoManual,
     });
     if (error) return toast.error(error.message);
     setShowGerar(false);
