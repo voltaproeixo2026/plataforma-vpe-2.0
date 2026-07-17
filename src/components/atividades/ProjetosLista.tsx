@@ -95,6 +95,10 @@ export function ProjetosLista({ userId, onOpen }: { userId: string; onOpen: (id:
 
   return (
     <div>
+      <p className="text-sm text-text-secondary mb-4">
+        Projetos são as entregas em andamento. Cada projeto pertence a um <span className="font-mono">tipo</span> (categoria),
+        pode ser vinculado a uma <span className="font-mono">semana</span> do ciclo ativo e a uma <span className="font-mono">intenção</span> maior do período.
+      </p>
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div className="flex flex-wrap gap-2 items-center">
           <select value={filtroTipo} onChange={e => setFiltroTipo(e.target.value)} className={inputCls + " max-w-xs"}>
