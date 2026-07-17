@@ -7,7 +7,7 @@ import { PageHeader, Btn, Modal, Field, inputCls, EmptyState } from "@/component
 import { toast } from "sonner";
 import { X } from "lucide-react";
 
-export const Route = createFileRoute("/_app/atividades/intencoes")({
+export const Route = createFileRoute("/_authenticated/atividades/intencoes")({
   component: IntencoesPage,
 });
 
