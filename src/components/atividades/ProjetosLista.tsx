@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Btn, Field, inputCls, Modal, EmptyState, Chip, ProgressBar } from "@/components/ui-custom";
+import { Btn, Field, inputCls, Modal, EmptyState, Chip } from "@/components/ui-custom";
 import { fmtHoras } from "@/lib/atividades";
 import { toast } from "sonner";
 import { Pencil, Trash2 } from "lucide-react";
