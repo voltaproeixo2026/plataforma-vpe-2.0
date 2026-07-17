@@ -537,7 +537,6 @@ export type Database = {
           horas_totais: number
           id: string
           intencao_id: string | null
-          percentual_conclusao: number
           semana_id: string | null
           status: Database["public"]["Enums"]["projeto_status"]
           tipo_id: string
@@ -551,7 +550,6 @@ export type Database = {
           horas_totais?: number
           id?: string
           intencao_id?: string | null
-          percentual_conclusao?: number
           semana_id?: string | null
           status?: Database["public"]["Enums"]["projeto_status"]
           tipo_id: string
@@ -565,7 +563,6 @@ export type Database = {
           horas_totais?: number
           id?: string
           intencao_id?: string | null
-          percentual_conclusao?: number
           semana_id?: string | null
           status?: Database["public"]["Enums"]["projeto_status"]
           tipo_id?: string
@@ -818,63 +815,6 @@ export type Database = {
         }
         Relationships: []
       }
-      tarefas_projeto: {
-        Row: {
-          created_at: string
-          data: string | null
-          descricao: string | null
-          id: string
-          ordem: number
-          parent_id: string | null
-          projeto_id: string
-          status: Database["public"]["Enums"]["tarefa_status"]
-          titulo: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          data?: string | null
-          descricao?: string | null
-          id?: string
-          ordem?: number
-          parent_id?: string | null
-          projeto_id: string
-          status?: Database["public"]["Enums"]["tarefa_status"]
-          titulo: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          data?: string | null
-          descricao?: string | null
-          id?: string
-          ordem?: number
-          parent_id?: string | null
-          projeto_id?: string
-          status?: Database["public"]["Enums"]["tarefa_status"]
-          titulo?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "tarefas_projeto_parent_id_fkey"
-            columns: ["parent_id"]
-            isOneToOne: false
-            referencedRelation: "tarefas_projeto"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tarefas_projeto_projeto_id_fkey"
-            columns: ["projeto_id"]
-            isOneToOne: false
-            referencedRelation: "projetos"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       tasks: {
         Row: {
           category: string
@@ -980,16 +920,11 @@ export type Database = {
     }
     Functions: {
       recalc_projeto_horas: { Args: { _projeto: string }; Returns: undefined }
-      recalc_projeto_percentual: {
-        Args: { _projeto: string }
-        Returns: undefined
-      }
     }
     Enums: {
       ciclo_status: "ativo" | "concluido"
       projeto_status: "planejamento" | "ativo" | "concluido" | "cancelado"
       registro_origem: "manual" | "cronometro"
-      tarefa_status: "a_fazer" | "em_progresso" | "concluida" | "cancelada"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1120,7 +1055,6 @@ export const Constants = {
       ciclo_status: ["ativo", "concluido"],
       projeto_status: ["planejamento", "ativo", "concluido", "cancelado"],
       registro_origem: ["manual", "cronometro"],
-      tarefa_status: ["a_fazer", "em_progresso", "concluida", "cancelada"],
     },
   },
 } as const

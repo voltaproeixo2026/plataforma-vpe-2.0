@@ -46,6 +46,7 @@ export function IntencoesCrud({ userId }: { userId: string }) {
 
   return (
     <div>
+      <p className="text-sm text-text-secondary mb-4">Objetivos maiores do período que agrupam projetos.</p>
       <div className="flex justify-end mb-4"><Btn onClick={openNew}>+ Nova intenção</Btn></div>
       {itens.length === 0 ? <EmptyState icon="✨" text="Nenhuma intenção ainda" /> : (
         <div className="grid gap-3 md:grid-cols-2">

@@ -6,19 +6,19 @@ import { AuthUserContext } from "@/hooks/use-auth";
 import { PageHeader } from "@/components/ui-custom";
 import { ensureSeedETickle } from "@/lib/atividades";
 import { CicloManager } from "@/components/atividades/CicloManager";
-import { AtividadesLista } from "@/components/atividades/AtividadesLista";
 import { IntencoesCrud } from "@/components/atividades/Intencoes";
 import { ProjetosLista } from "@/components/atividades/ProjetosLista";
 import { ProjetoDetail } from "@/components/atividades/ProjetoDetail";
 import { TiposCrud } from "@/components/atividades/Tipos";
+import { RegistroTempoLista } from "@/components/atividades/RegistroTempoLista";
 
-type Tab = "ciclo" | "atividades" | "intencoes" | "projetos" | "tipos";
+type Tab = "ciclo" | "intencoes" | "projetos" | "tipos" | "tempo";
 const TABS: { key: Tab; label: string }[] = [
   { key: "ciclo", label: "Gerenciar ciclo" },
-  { key: "atividades", label: "Atividades" },
   { key: "intencoes", label: "Intenções" },
   { key: "projetos", label: "Projetos" },
   { key: "tipos", label: "Tipos" },
+  { key: "tempo", label: "Registro de Tempo" },
 ];
 
 export const Route = createFileRoute("/_authenticated/atividades")({
@@ -36,8 +36,6 @@ function AtividadesPage() {
   useEffect(() => {
     ensureSeedETickle(userId).catch(() => { /* silent */ });
   }, [userId]);
-
-  const openProjeto = (id: string) => { setProjetoOpen(id); setTab("projetos"); };
 
   return (
     <div>
@@ -57,10 +55,10 @@ function AtividadesPage() {
       {projetoOpen ? (
         <ProjetoDetail projetoId={projetoOpen} userId={userId} onBack={() => setProjetoOpen(null)} />
       ) : tab === "ciclo" ? <CicloManager userId={userId} />
-        : tab === "atividades" ? <AtividadesLista userId={userId} onOpenProjeto={openProjeto} />
         : tab === "intencoes" ? <IntencoesCrud userId={userId} />
-        : tab === "projetos" ? <ProjetosLista userId={userId} onOpen={openProjeto} />
-        : <TiposCrud userId={userId} />}
+        : tab === "projetos" ? <ProjetosLista userId={userId} onOpen={setProjetoOpen} />
+        : tab === "tipos" ? <TiposCrud userId={userId} />
+        : <RegistroTempoLista userId={userId} />}
     </div>
   );
 }

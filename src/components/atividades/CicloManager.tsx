@@ -11,6 +11,7 @@ const CICLO_SIZE = 12;
 export function CicloManager({ userId }: { userId: string }) {
   const qc = useQueryClient();
   const [showGerar, setShowGerar] = useState(false);
+  const [modoManual, setModoManual] = useState(false);
   const [showEncerrar, setShowEncerrar] = useState(false);
   const [reflexao, setReflexao] = useState("");
   const [novoNome, setNovoNome] = useState("");
@@ -55,16 +56,27 @@ export function CicloManager({ userId }: { userId: string }) {
     setNovoInicio(inicio);
     setNovoFim(addDays(inicio, 6));
     setDescanso(false);
+    setModoManual(false);
+    setShowGerar(true);
+  };
+
+  const openManual = () => {
+    setNovoNome(`Semana ${semanas.length + 1}`);
+    setNovoInicio(ciclo?.data_inicio || todayISO());
+    setNovoFim("");
+    setDescanso(false);
+    setModoManual(true);
     setShowGerar(true);
   };
 
   const gerar = async () => {
     if (!cicloId) return;
     if (semanas.length >= CICLO_SIZE) { toast.error("Ciclo já tem 12 semanas"); return; }
+    if (!novoInicio || !novoFim) { toast.error("Informe início e fim"); return; }
     const { error } = await supabase.from("semanas").insert({
       user_id: userId, ciclo_id: cicloId, nome: novoNome,
       data_inicio: novoInicio, data_fim: novoFim,
-      ordem_no_ciclo: semanas.length + 1, descanso, gerada_automaticamente: true,
+      ordem_no_ciclo: semanas.length + 1, descanso, gerada_automaticamente: !modoManual,
     });
     if (error) return toast.error(error.message);
     setShowGerar(false);
@@ -90,6 +102,10 @@ export function CicloManager({ userId }: { userId: string }) {
 
   return (
     <div>
+      <p className="text-sm text-text-secondary mb-4">
+        Um ciclo é um bloco de <span className="font-mono">12 semanas</span> de execução focada, seguido de descanso e revisão.
+        Cadastre a primeira semana manualmente e, a partir daí, gere as próximas em sequência. O progresso avança conforme as semanas são criadas dentro do ciclo (não pelo calendário civil).
+      </p>
       {ciclo && (
         <div className="bg-dark text-bg-primary rounded-2xl p-6 mb-6">
           <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
@@ -98,8 +114,9 @@ export function CicloManager({ userId }: { userId: string }) {
               <div className="font-display text-2xl">{ciclo.nome}</div>
               <div className="text-xs font-mono text-bg-tertiary/70 mt-1">Início: {fmtDateBR(ciclo.data_inicio)}</div>
             </div>
-            <div className="flex gap-2">
-              <Btn onClick={openGerar} disabled={semanas.length >= CICLO_SIZE}>+ Gerar próxima semana</Btn>
+            <div className="flex gap-2 flex-wrap">
+              <Btn variant="ghost" onClick={openManual} disabled={semanas.length >= CICLO_SIZE}>+ Nova semana</Btn>
+              <Btn onClick={openGerar} disabled={semanas.length >= CICLO_SIZE}>+ Gerar próxima</Btn>
               {podeEncerrar && <Btn variant="danger" onClick={() => setShowEncerrar(true)}>Encerrar ciclo</Btn>}
             </div>
           </div>
@@ -150,7 +167,7 @@ export function CicloManager({ userId }: { userId: string }) {
         </div>
       )}
 
-      <Modal open={showGerar} onClose={() => setShowGerar(false)} title="Gerar próxima semana">
+      <Modal open={showGerar} onClose={() => setShowGerar(false)} title={modoManual ? "Nova semana" : "Gerar próxima semana"}>
         <Field label="Nome"><input className={inputCls} value={novoNome} onChange={e => setNovoNome(e.target.value)} /></Field>
         <div className="grid grid-cols-2 gap-3">
           <Field label="Início"><input type="date" className={inputCls} value={novoInicio} onChange={e => setNovoInicio(e.target.value)} /></Field>
@@ -179,13 +196,12 @@ function CicloResumo({ cicloId, reflexao }: { cicloId: string; reflexao?: string
     queryFn: async () => {
       const { data: semanas } = await supabase.from("semanas").select("id").eq("ciclo_id", cicloId);
       const semIds = (semanas || []).map(s => s.id);
-      if (semIds.length === 0) return { concl: 0, canc: 0, and: 0, pct: 0, byTipo: [] as { nome: string; horas: number }[] };
-      const { data: projetos } = await supabase.from("projetos").select("id, status, percentual_conclusao, tipo_id, tipos_projeto(nome)").in("semana_id", semIds);
+      if (semIds.length === 0) return { concl: 0, canc: 0, and: 0, byTipo: [] as { nome: string; horas: number }[] };
+      const { data: projetos } = await supabase.from("projetos").select("id, status, tipo_id, tipos_projeto(nome)").in("semana_id", semIds);
       const p = projetos || [];
       const concl = p.filter((x: any) => x.status === "concluido").length;
       const canc = p.filter((x: any) => x.status === "cancelado").length;
       const and = p.filter((x: any) => x.status === "ativo" || x.status === "planejamento").length;
-      const pct = p.length ? Math.round(p.reduce((a: number, x: any) => a + Number(x.percentual_conclusao || 0), 0) / p.length) : 0;
       const projIds = p.map((x: any) => x.id);
       let byTipo: { nome: string; horas: number }[] = [];
       if (projIds.length) {
@@ -197,14 +213,13 @@ function CicloResumo({ cicloId, reflexao }: { cicloId: string; reflexao?: string
         });
         byTipo = Array.from(agg.entries()).map(([nome, mins]) => ({ nome, horas: Math.round(mins / 6) / 10 }));
       }
-      return { concl, canc, and, pct, byTipo };
+      return { concl, and, canc, byTipo };
     },
   });
   if (!data) return <div className="p-3 text-sm text-text-tertiary">Carregando...</div>;
   return (
     <div className="p-3 grid gap-3 md:grid-cols-2 text-sm">
       <div><div className="label-mono">Projetos</div>{data.concl} concluídos · {data.canc} cancelados · {data.and} em andamento</div>
-      <div><div className="label-mono">% médio conclusão</div><span className="font-mono text-lg">{data.pct}%</span></div>
       <div className="md:col-span-2">
         <div className="label-mono mb-1">Horas por tipo</div>
         {data.byTipo.length === 0 ? <div className="text-text-tertiary text-xs">Sem registros</div> :
