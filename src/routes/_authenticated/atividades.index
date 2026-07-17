@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/lib/auth-context";
+import { useAuth } from "@/hooks/use-auth";
 import { PageHeader, Btn, Modal, Field, inputCls, Tag, EmptyState, ProgressBar } from "@/components/ui-custom";
 import { PROJETO_STATUS, ensureDefaultTipos } from "@/lib/atividades-helpers";
 import { toast } from "sonner";
