@@ -11,6 +11,7 @@ const CICLO_SIZE = 12;
 export function CicloManager({ userId }: { userId: string }) {
   const qc = useQueryClient();
   const [showGerar, setShowGerar] = useState(false);
+  const [modoManual, setModoManual] = useState(false);
   const [showEncerrar, setShowEncerrar] = useState(false);
   const [reflexao, setReflexao] = useState("");
   const [novoNome, setNovoNome] = useState("");
