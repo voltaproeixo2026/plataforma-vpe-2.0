@@ -102,6 +102,10 @@ export function CicloManager({ userId }: { userId: string }) {
 
   return (
     <div>
+      <p className="text-sm text-text-secondary mb-4">
+        Um ciclo é um bloco de <span className="font-mono">12 semanas</span> de execução focada, seguido de descanso e revisão.
+        Cadastre a primeira semana manualmente e, a partir daí, gere as próximas em sequência. O progresso avança conforme as semanas são criadas dentro do ciclo (não pelo calendário civil).
+      </p>
       {ciclo && (
         <div className="bg-dark text-bg-primary rounded-2xl p-6 mb-6">
           <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
@@ -110,8 +114,9 @@ export function CicloManager({ userId }: { userId: string }) {
               <div className="font-display text-2xl">{ciclo.nome}</div>
               <div className="text-xs font-mono text-bg-tertiary/70 mt-1">Início: {fmtDateBR(ciclo.data_inicio)}</div>
             </div>
-            <div className="flex gap-2">
-              <Btn onClick={openGerar} disabled={semanas.length >= CICLO_SIZE}>+ Gerar próxima semana</Btn>
+            <div className="flex gap-2 flex-wrap">
+              <Btn variant="ghost" onClick={openManual} disabled={semanas.length >= CICLO_SIZE}>+ Nova semana</Btn>
+              <Btn onClick={openGerar} disabled={semanas.length >= CICLO_SIZE}>+ Gerar próxima</Btn>
               {podeEncerrar && <Btn variant="danger" onClick={() => setShowEncerrar(true)}>Encerrar ciclo</Btn>}
             </div>
           </div>
