@@ -67,6 +67,9 @@ export function TiposCrud({ userId }: { userId: string }) {
 
   return (
     <div>
+      <p className="text-sm text-text-secondary mb-4">
+        Categorias que classificam os projetos (ex.: Conteúdo, Comercial, Estudos). Cada projeto tem exatamente um tipo, o que permite consolidar horas e resultados por área.
+      </p>
       <div className="flex justify-end mb-4"><Btn onClick={openNew}>+ Novo tipo</Btn></div>
       {tipos.length === 0 ? <EmptyState icon="🎨" text="Nenhum tipo" /> : (
         <ul className="space-y-2">
