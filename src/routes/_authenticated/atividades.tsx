@@ -1,64 +1,88 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { useContext } from "react";
-import { AuthUserContext } from "@/hooks/use-auth";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { CalendarDays, ChevronRight } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth-context";
+import { PageHeader, EmptyState, Tag } from "@/components/ui-custom";
+import { TAREFA_STATUS } from "@/lib/atividades-helpers";
 
-import { PageHeader } from "@/components/ui-custom";
-import { ensureSeedETickle } from "@/lib/atividades";
-import { CicloManager } from "@/components/atividades/CicloManager";
-import { IntencoesCrud } from "@/components/atividades/Intencoes";
-import { ProjetosLista } from "@/components/atividades/ProjetosLista";
-import { ProjetoDetail } from "@/components/atividades/ProjetoDetail";
-import { TiposCrud } from "@/components/atividades/Tipos";
-import { RegistroTempoLista } from "@/components/atividades/RegistroTempoLista";
-
-type Tab = "ciclo" | "intencoes" | "projetos" | "tipos" | "tempo";
-const TABS: { key: Tab; label: string }[] = [
-  { key: "ciclo", label: "Gerenciar ciclo" },
-  { key: "intencoes", label: "Intenções" },
-  { key: "projetos", label: "Projetos" },
-  { key: "tipos", label: "Tipos" },
-  { key: "tempo", label: "Registro de Tempo" },
-];
-
-export const Route = createFileRoute("/_authenticated/atividades")({
-  component: AtividadesPage,
+export const Route = createFileRoute("/_app/atividades/agenda")({
+  component: AgendaAtividadesPage,
 });
 
-function AtividadesPage() {
-  const user = useContext(AuthUserContext);
-  if (!user) return null;
-  const userId = user.id;
+function AgendaAtividadesPage() {
+  const { user } = useAuth();
+  const uid = user!.id;
+  const hoje = new Date().toISOString().slice(0, 10);
 
-  const [tab, setTab] = useState<Tab>("projetos");
-  const [projetoOpen, setProjetoOpen] = useState<string | null>(null);
+  const { data: tarefas = [] } = useQuery({
+    queryKey: ["tarefas_com_data", uid],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("tarefas_projeto")
+        .select("id,titulo,status,data,projeto_id,projetos(titulo,tipos_projeto(nome,cor),semanas(nome))")
+        .eq("user_id", uid)
+        .not("data", "is", null)
+        .neq("status", "concluida")
+        .neq("status", "cancelada")
+        .order("data", { ascending: true });
+      return data ?? [];
+    },
+  });
 
-  useEffect(() => {
-    ensureSeedETickle(userId).catch(() => { /* silent */ });
-  }, [userId]);
+  const atrasadas = tarefas.filter((t: any) => t.data < hoje);
+  const hojeLista = tarefas.filter((t: any) => t.data === hoje);
+  const proximas = tarefas.filter((t: any) => t.data > hoje);
 
   return (
     <div>
-      <PageHeader title="Atividades" subtitle="Ciclos, projetos e execução" />
-
-      {!projetoOpen && (
-        <div className="flex flex-wrap gap-2 mb-6 border-b border-border pb-2">
-          {TABS.map(t => (
-            <button key={t.key} onClick={() => setTab(t.key)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-mono transition ${tab === t.key ? "bg-terracota text-bg-primary" : "text-text-secondary hover:text-text-primary"}`}>
-              {t.label}
-            </button>
-          ))}
+      <PageHeader title="Atividades com data" subtitle="Visualização rápida do que tem dia marcado" />
+      {tarefas.length === 0 ? (
+        <EmptyState icon="📅" text="Nenhuma atividade com data pendente" />
+      ) : (
+        <div className="space-y-5">
+          <GrupoAgenda titulo="Hoje" tarefas={hojeLista} destaque="terracota" />
+          <GrupoAgenda titulo="Atrasadas" tarefas={atrasadas} destaque="amber" />
+          <GrupoAgenda titulo="Próximas" tarefas={proximas} destaque="sage" />
         </div>
       )}
-
-      {projetoOpen ? (
-        <ProjetoDetail projetoId={projetoOpen} userId={userId} onBack={() => setProjetoOpen(null)} />
-      ) : tab === "ciclo" ? <CicloManager userId={userId} />
-        : tab === "intencoes" ? <IntencoesCrud userId={userId} />
-        : tab === "projetos" ? <ProjetosLista userId={userId} onOpen={setProjetoOpen} />
-        : tab === "tipos" ? <TiposCrud userId={userId} />
-        : <RegistroTempoLista userId={userId} />}
     </div>
+  );
+}
+
+function GrupoAgenda({ titulo, tarefas, destaque }: { titulo: string; tarefas: any[]; destaque: "terracota" | "amber" | "sage" }) {
+  if (tarefas.length === 0) return null;
+  return (
+    <section>
+      <div className="label-mono mb-2">{titulo}</div>
+      <div className="space-y-2">
+        {tarefas.map((t) => {
+          const status = TAREFA_STATUS.find((s) => s.key === t.status);
+          const projeto = Array.isArray(t.projetos) ? t.projetos[0] : t.projetos;
+          return (
+            <Link
+              key={t.id}
+              to="/atividades/projeto/$id"
+              params={{ id: t.projeto_id }}
+              className="bg-bg-primary border border-border rounded-xl p-4 hover:border-terracota transition flex items-center gap-3"
+            >
+              <div className="w-11 h-11 rounded-lg bg-bg-secondary flex items-center justify-center text-terracota flex-shrink-0">
+                <CalendarDays size={18} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-display text-lg truncate">{t.titulo}</div>
+                <div className="text-xs font-mono text-text-tertiary mt-0.5">
+                  {new Date(t.data + "T12:00").toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit" })}
+                  {projeto?.titulo && ` · ${projeto.titulo}`}
+                  {projeto?.semanas?.nome && ` · ${projeto.semanas.nome}`}
+                </div>
+              </div>
+              <Tag color={destaque}>{status?.label ?? t.status}</Tag>
+              <ChevronRight size={16} className="text-text-tertiary" />
+            </Link>
+          );
+        })}
+      </div>
+    </section>
   );
 }
