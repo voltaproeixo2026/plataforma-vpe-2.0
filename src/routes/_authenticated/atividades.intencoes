@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/lib/auth-context";
+import { useAuth } from "@/hooks/use-auth";
 import { PageHeader, Btn, Modal, Field, inputCls, EmptyState } from "@/components/ui-custom";
 import { toast } from "sonner";
 import { X } from "lucide-react";
