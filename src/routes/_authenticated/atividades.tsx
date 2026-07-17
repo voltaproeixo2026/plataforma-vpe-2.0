@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { CalendarDays, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/lib/auth-context";
+import { useAuth } from "@/hooks/use-auth";
 import { PageHeader, EmptyState, Tag } from "@/components/ui-custom";
 import { TAREFA_STATUS } from "@/lib/atividades-helpers";
 
