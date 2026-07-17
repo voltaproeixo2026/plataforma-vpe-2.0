@@ -196,13 +196,12 @@ function CicloResumo({ cicloId, reflexao }: { cicloId: string; reflexao?: string
     queryFn: async () => {
       const { data: semanas } = await supabase.from("semanas").select("id").eq("ciclo_id", cicloId);
       const semIds = (semanas || []).map(s => s.id);
-      if (semIds.length === 0) return { concl: 0, canc: 0, and: 0, pct: 0, byTipo: [] as { nome: string; horas: number }[] };
-      const { data: projetos } = await supabase.from("projetos").select("id, status, percentual_conclusao, tipo_id, tipos_projeto(nome)").in("semana_id", semIds);
+      if (semIds.length === 0) return { concl: 0, canc: 0, and: 0, byTipo: [] as { nome: string; horas: number }[] };
+      const { data: projetos } = await supabase.from("projetos").select("id, status, tipo_id, tipos_projeto(nome)").in("semana_id", semIds);
       const p = projetos || [];
       const concl = p.filter((x: any) => x.status === "concluido").length;
       const canc = p.filter((x: any) => x.status === "cancelado").length;
       const and = p.filter((x: any) => x.status === "ativo" || x.status === "planejamento").length;
-      const pct = p.length ? Math.round(p.reduce((a: number, x: any) => a + Number(x.percentual_conclusao || 0), 0) / p.length) : 0;
       const projIds = p.map((x: any) => x.id);
       let byTipo: { nome: string; horas: number }[] = [];
       if (projIds.length) {
