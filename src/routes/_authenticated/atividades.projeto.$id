@@ -15,7 +15,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-export const Route = createFileRoute("/_app/atividades/projeto/$id")({
+export const Route = createFileRoute("/_authenticated/atividades/projeto/$id")({
   component: ProjetoDetail,
 });
 
