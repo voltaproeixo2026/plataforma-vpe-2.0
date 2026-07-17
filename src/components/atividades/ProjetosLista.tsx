@@ -133,7 +133,7 @@ export function ProjetosLista({ userId, onOpen }: { userId: string; onOpen: (id:
                 {p.intencoes?.titulo && <span>✨ {p.intencoes.titulo}</span>}
                 <span>⏱ {fmtHoras(Number(p.horas_totais))}</span>
               </div>
-              <ProgressBar value={Number(p.percentual_conclusao)} max={100} rightLabel={`${Math.round(Number(p.percentual_conclusao))}%`} />
+              
             </div>
           ))}
         </div>
