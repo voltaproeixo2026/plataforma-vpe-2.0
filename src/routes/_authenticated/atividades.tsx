@@ -4,7 +4,7 @@ import { CalendarDays, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { PageHeader, EmptyState, Tag } from "@/components/ui-custom";
-import { TAREFA_STATUS } from "@/lib/atividades-helpers";
+import { TAREFA_STATUS } from "@/lib/atividades";
 
 export const Route = createFileRoute("/_authenticated/atividades")({
   component: AgendaAtividadesPage,
