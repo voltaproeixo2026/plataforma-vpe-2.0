@@ -167,16 +167,26 @@ function HomePage() {
       <div className="grid md:grid-cols-2 gap-4">
         <div className="bg-bg-primary border border-border rounded-xl p-5">
           <SectionTitle>Tarefas de hoje</SectionTitle>
-          {sortedTasks.length === 0 ? (
+          {sortedTasks.length === 0 && projTarefas.length === 0 ? (
             <div className="text-text-tertiary text-sm">Nenhuma tarefa pendente 🎉</div>
           ) : (
             <ul className="space-y-2">
               {sortedTasks.map((t: any) => (
-                <li key={t.id} className="flex items-center gap-3 py-1 text-sm">
+                <li key={`t-${t.id}`} className="flex items-center gap-3 py-1 text-sm">
                   <span className={`w-2 h-2 rounded-full ${t.priority === "alta" ? "bg-[#e05c5c]" : t.priority === "media" ? "bg-gold" : "bg-sage"}`} />
                   {t.text}
                 </li>
               ))}
+              {projTarefas.map((t: any) => {
+                const proj = Array.isArray(t.projetos) ? t.projetos[0] : t.projetos;
+                return (
+                  <li key={`p-${t.id}`} className="flex items-center gap-3 py-1 text-sm">
+                    <span className="w-2 h-2 rounded-full bg-terracota" />
+                    <span className="flex-1">{t.titulo}</span>
+                    {proj?.titulo && <span className="text-xs font-mono text-text-tertiary">{proj.titulo}</span>}
+                  </li>
+                );
+              })}
             </ul>
           )}
           <Link to="/tarefas" className="text-xs text-terracota font-mono mt-3 inline-block">Ver todas →</Link>
