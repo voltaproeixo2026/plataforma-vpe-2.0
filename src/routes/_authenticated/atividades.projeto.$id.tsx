@@ -53,6 +53,8 @@ function ProjetoDetail() {
     return m;
   }, [tarefas]);
 
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
+
   if (!p) return <div className="text-text-tertiary">Carregando…</div>;
 
   const st = PROJETO_STATUS.find((s) => s.key === p.status);
