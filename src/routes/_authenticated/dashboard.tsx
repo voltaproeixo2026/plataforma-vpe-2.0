@@ -57,7 +57,7 @@ function HomePage() {
   const { data } = useQuery({
     queryKey: ["home", uid],
     queryFn: async () => {
-      const [contacts, hot, ssToday, ssWeek, fatMonth, fatMeta, ssCfg, tasks, events] = await Promise.all([
+      const [contacts, hot, ssToday, ssWeek, fatMonth, fatMeta, ssCfg, tasks, projTarefas, events] = await Promise.all([
         supabase.from("contacts").select("id", { count: "exact", head: true }),
         supabase.from("contacts").select("id", { count: "exact", head: true }).eq("temperatura", "quente"),
         supabase.from("ss_counts").select("abordagem").eq("date", today).maybeSingle(),
@@ -66,6 +66,12 @@ function HomePage() {
         supabase.from("fat_meta").select("value").eq("month_ref", mref).maybeSingle(),
         supabase.from("ss_config").select("*").maybeSingle(),
         supabase.from("tasks").select("*").eq("date", today).eq("done", false).order("priority"),
+        supabase.from("tarefas_projeto")
+          .select("id,titulo,status,data,projeto_id,projetos(titulo)")
+          .eq("user_id", uid)
+          .eq("data", today)
+          .neq("status", "concluida")
+          .neq("status", "cancelada"),
         supabase.from("calendar_events").select("*").gte("date", today).order("date").limit(5),
       ]);
       return {
@@ -77,6 +83,7 @@ function HomePage() {
         fatMeta: Number(fatMeta.data?.value ?? 0),
         ssCfg: ssCfg.data ?? { meta_day: 10 },
         tasks: tasks.data ?? [],
+        projTarefas: projTarefas.data ?? [],
         events: events.data ?? [],
       };
     },
@@ -85,6 +92,7 @@ function HomePage() {
   const d = data;
   const pOrder: Record<string, number> = { alta: 0, media: 1, baixa: 2 };
   const sortedTasks = (d?.tasks ?? []).slice().sort((a: any, b: any) => pOrder[a.priority] - pOrder[b.priority]).slice(0, 5);
+  const projTarefas = (d?.projTarefas ?? []).slice(0, 5);
 
   return (
     <div>
