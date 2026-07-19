@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, Btn, Modal, Field, inputCls, EmptyState, ProgressBar } from "@/components/ui-custom";
-import { PROJETO_STATUS, TAREFA_STATUS, formatDuracao } from "@/lib/atividades-helpers";
+import { PROJETO_STATUS, TAREFA_STATUS, formatDuracao } from "@/lib/atividades";
 import { CheckCircle2, Circle, ChevronDown, ChevronRight, X, Clock, GripVertical, Repeat, Copy, Plus, CalendarDays } from "lucide-react";
 import { toast } from "sonner";
 import {

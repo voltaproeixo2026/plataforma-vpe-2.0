@@ -29,6 +29,7 @@ import { Route as AuthenticatedCicloRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedCalendarioRouteImport } from './routes/_authenticated/calendario'
 import { Route as AuthenticatedAtividadesRouteImport } from './routes/_authenticated/atividades'
 import { Route as AuthenticatedAcoesRouteImport } from './routes/_authenticated/acoes'
+import { Route as AuthenticatedAtividadesProjetoIdRouteImport } from './routes/_authenticated/atividades.projeto.$id'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -131,6 +132,12 @@ const AuthenticatedAcoesRoute = AuthenticatedAcoesRouteImport.update({
   path: '/acoes',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAtividadesProjetoIdRoute =
+  AuthenticatedAtividadesProjetoIdRouteImport.update({
+    id: '/projeto/$id',
+    path: '/projeto/$id',
+    getParentRoute: () => AuthenticatedAtividadesRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -138,7 +145,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/acoes': typeof AuthenticatedAcoesRoute
-  '/atividades': typeof AuthenticatedAtividadesRoute
+  '/atividades': typeof AuthenticatedAtividadesRouteWithChildren
   '/calendario': typeof AuthenticatedCalendarioRoute
   '/ciclo': typeof AuthenticatedCicloRoute
   '/conteudo': typeof AuthenticatedConteudoRoute
@@ -152,6 +159,7 @@ export interface FileRoutesByFullPath {
   '/social-selling': typeof AuthenticatedSocialSellingRoute
   '/tarefas': typeof AuthenticatedTarefasRoute
   '/tempo': typeof AuthenticatedTempoRoute
+  '/atividades/projeto/$id': typeof AuthenticatedAtividadesProjetoIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -159,7 +167,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/acoes': typeof AuthenticatedAcoesRoute
-  '/atividades': typeof AuthenticatedAtividadesRoute
+  '/atividades': typeof AuthenticatedAtividadesRouteWithChildren
   '/calendario': typeof AuthenticatedCalendarioRoute
   '/ciclo': typeof AuthenticatedCicloRoute
   '/conteudo': typeof AuthenticatedConteudoRoute
@@ -173,6 +181,7 @@ export interface FileRoutesByTo {
   '/social-selling': typeof AuthenticatedSocialSellingRoute
   '/tarefas': typeof AuthenticatedTarefasRoute
   '/tempo': typeof AuthenticatedTempoRoute
+  '/atividades/projeto/$id': typeof AuthenticatedAtividadesProjetoIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -182,7 +191,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/acoes': typeof AuthenticatedAcoesRoute
-  '/_authenticated/atividades': typeof AuthenticatedAtividadesRoute
+  '/_authenticated/atividades': typeof AuthenticatedAtividadesRouteWithChildren
   '/_authenticated/calendario': typeof AuthenticatedCalendarioRoute
   '/_authenticated/ciclo': typeof AuthenticatedCicloRoute
   '/_authenticated/conteudo': typeof AuthenticatedConteudoRoute
@@ -196,6 +205,7 @@ export interface FileRoutesById {
   '/_authenticated/social-selling': typeof AuthenticatedSocialSellingRoute
   '/_authenticated/tarefas': typeof AuthenticatedTarefasRoute
   '/_authenticated/tempo': typeof AuthenticatedTempoRoute
+  '/_authenticated/atividades/projeto/$id': typeof AuthenticatedAtividadesProjetoIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -219,6 +229,7 @@ export interface FileRouteTypes {
     | '/social-selling'
     | '/tarefas'
     | '/tempo'
+    | '/atividades/projeto/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -240,6 +251,7 @@ export interface FileRouteTypes {
     | '/social-selling'
     | '/tarefas'
     | '/tempo'
+    | '/atividades/projeto/$id'
   id:
     | '__root__'
     | '/'
@@ -262,6 +274,7 @@ export interface FileRouteTypes {
     | '/_authenticated/social-selling'
     | '/_authenticated/tarefas'
     | '/_authenticated/tempo'
+    | '/_authenticated/atividades/projeto/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -414,12 +427,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAcoesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/atividades/projeto/$id': {
+      id: '/_authenticated/atividades/projeto/$id'
+      path: '/projeto/$id'
+      fullPath: '/atividades/projeto/$id'
+      preLoaderRoute: typeof AuthenticatedAtividadesProjetoIdRouteImport
+      parentRoute: typeof AuthenticatedAtividadesRoute
+    }
   }
 }
 
+interface AuthenticatedAtividadesRouteChildren {
+  AuthenticatedAtividadesProjetoIdRoute: typeof AuthenticatedAtividadesProjetoIdRoute
+}
+
+const AuthenticatedAtividadesRouteChildren: AuthenticatedAtividadesRouteChildren =
+  {
+    AuthenticatedAtividadesProjetoIdRoute:
+      AuthenticatedAtividadesProjetoIdRoute,
+  }
+
+const AuthenticatedAtividadesRouteWithChildren =
+  AuthenticatedAtividadesRoute._addFileChildren(
+    AuthenticatedAtividadesRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAcoesRoute: typeof AuthenticatedAcoesRoute
-  AuthenticatedAtividadesRoute: typeof AuthenticatedAtividadesRoute
+  AuthenticatedAtividadesRoute: typeof AuthenticatedAtividadesRouteWithChildren
   AuthenticatedCalendarioRoute: typeof AuthenticatedCalendarioRoute
   AuthenticatedCicloRoute: typeof AuthenticatedCicloRoute
   AuthenticatedConteudoRoute: typeof AuthenticatedConteudoRoute
@@ -437,7 +472,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAcoesRoute: AuthenticatedAcoesRoute,
-  AuthenticatedAtividadesRoute: AuthenticatedAtividadesRoute,
+  AuthenticatedAtividadesRoute: AuthenticatedAtividadesRouteWithChildren,
   AuthenticatedCalendarioRoute: AuthenticatedCalendarioRoute,
   AuthenticatedCicloRoute: AuthenticatedCicloRoute,
   AuthenticatedConteudoRoute: AuthenticatedConteudoRoute,
