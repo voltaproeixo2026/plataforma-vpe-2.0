@@ -110,8 +110,8 @@ function FatPage() {
         </ul>
       )}
 
-      {openEntry && <EntryModal uid={uid} onClose={() => setOpenEntry(false)} onSaved={() => qc.invalidateQueries({ queryKey: ["fat_entries"] })} />}
-      {openMeta && <MetaModal uid={uid} mref={mref} current={metaVal} onClose={() => setOpenMeta(false)} onSaved={() => qc.invalidateQueries({ queryKey: ["fat_meta"] })} />}
+      {openEntry && <EntryModal uid={uid} onClose={() => setOpenEntry(false)} onSaved={() => { qc.invalidateQueries({ queryKey: ["fat_entries"] }); qc.invalidateQueries({ queryKey: ["home"] }); }} />}
+      {openMeta && <MetaModal uid={uid} mref={mref} current={metaVal} onClose={() => setOpenMeta(false)} onSaved={() => { qc.invalidateQueries({ queryKey: ["fat_meta"] }); qc.invalidateQueries({ queryKey: ["home"] }); }} />}
       {openSheet && <SheetModal uid={uid} current={sheet} onClose={() => setOpenSheet(false)} onSaved={() => qc.invalidateQueries({ queryKey: ["sheets_config"] })} />}
     </div>
   );
