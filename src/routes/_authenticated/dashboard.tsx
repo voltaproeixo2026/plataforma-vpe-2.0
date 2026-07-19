@@ -57,7 +57,7 @@ function HomePage() {
   const { data } = useQuery({
     queryKey: ["home", uid],
     queryFn: async () => {
-      const [contacts, hot, ssToday, ssWeek, fatMonth, fatMeta, ssCfg, tasks, events] = await Promise.all([
+      const [contacts, hot, ssToday, ssWeek, fatMonth, fatMeta, ssCfg, tasks, projTarefas, events] = await Promise.all([
         supabase.from("contacts").select("id", { count: "exact", head: true }),
         supabase.from("contacts").select("id", { count: "exact", head: true }).eq("temperatura", "quente"),
         supabase.from("ss_counts").select("abordagem").eq("date", today).maybeSingle(),
@@ -66,6 +66,12 @@ function HomePage() {
         supabase.from("fat_meta").select("value").eq("month_ref", mref).maybeSingle(),
         supabase.from("ss_config").select("*").maybeSingle(),
         supabase.from("tasks").select("*").eq("date", today).eq("done", false).order("priority"),
+        supabase.from("tarefas_projeto")
+          .select("id,titulo,status,data,projeto_id,projetos(titulo)")
+          .eq("user_id", uid)
+          .eq("data", today)
+          .neq("status", "concluida")
+          .neq("status", "cancelada"),
         supabase.from("calendar_events").select("*").gte("date", today).order("date").limit(5),
       ]);
       return {
@@ -77,6 +83,7 @@ function HomePage() {
         fatMeta: Number(fatMeta.data?.value ?? 0),
         ssCfg: ssCfg.data ?? { meta_day: 10 },
         tasks: tasks.data ?? [],
+        projTarefas: projTarefas.data ?? [],
         events: events.data ?? [],
       };
     },
@@ -85,6 +92,7 @@ function HomePage() {
   const d = data;
   const pOrder: Record<string, number> = { alta: 0, media: 1, baixa: 2 };
   const sortedTasks = (d?.tasks ?? []).slice().sort((a: any, b: any) => pOrder[a.priority] - pOrder[b.priority]).slice(0, 5);
+  const projTarefas = (d?.projTarefas ?? []).slice(0, 5);
 
   return (
     <div>
@@ -159,16 +167,26 @@ function HomePage() {
       <div className="grid md:grid-cols-2 gap-4">
         <div className="bg-bg-primary border border-border rounded-xl p-5">
           <SectionTitle>Tarefas de hoje</SectionTitle>
-          {sortedTasks.length === 0 ? (
+          {sortedTasks.length === 0 && projTarefas.length === 0 ? (
             <div className="text-text-tertiary text-sm">Nenhuma tarefa pendente 🎉</div>
           ) : (
             <ul className="space-y-2">
               {sortedTasks.map((t: any) => (
-                <li key={t.id} className="flex items-center gap-3 py-1 text-sm">
+                <li key={`t-${t.id}`} className="flex items-center gap-3 py-1 text-sm">
                   <span className={`w-2 h-2 rounded-full ${t.priority === "alta" ? "bg-[#e05c5c]" : t.priority === "media" ? "bg-gold" : "bg-sage"}`} />
                   {t.text}
                 </li>
               ))}
+              {projTarefas.map((t: any) => {
+                const proj = Array.isArray(t.projetos) ? t.projetos[0] : t.projetos;
+                return (
+                  <li key={`p-${t.id}`} className="flex items-center gap-3 py-1 text-sm">
+                    <span className="w-2 h-2 rounded-full bg-terracota" />
+                    <span className="flex-1">{t.titulo}</span>
+                    {proj?.titulo && <span className="text-xs font-mono text-text-tertiary">{proj.titulo}</span>}
+                  </li>
+                );
+              })}
             </ul>
           )}
           <Link to="/tarefas" className="text-xs text-terracota font-mono mt-3 inline-block">Ver todas →</Link>

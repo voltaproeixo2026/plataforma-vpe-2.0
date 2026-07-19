@@ -4,7 +4,7 @@ import { CalendarDays, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { PageHeader, EmptyState, Tag } from "@/components/ui-custom";
-import { TAREFA_STATUS } from "@/lib/atividades";
+import { TAREFA_STATUS, todayISO } from "@/lib/atividades";
 
 export const Route = createFileRoute("/_authenticated/atividades")({
   component: AgendaAtividadesPage,
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_authenticated/atividades")({
 function AgendaAtividadesPage() {
   const { user } = useAuth();
   const uid = user!.id;
-  const hoje = new Date().toISOString().slice(0, 10);
+  const hoje = todayISO();
 
   const { data: tarefas = [] } = useQuery({
     queryKey: ["tarefas_com_data", uid],
