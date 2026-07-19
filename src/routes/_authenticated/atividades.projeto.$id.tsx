@@ -94,7 +94,6 @@ function ProjetoDetail() {
     inv();
   };
 
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
   const onDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
