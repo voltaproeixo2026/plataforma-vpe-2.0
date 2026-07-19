@@ -115,8 +115,8 @@ function ProjetoDetail() {
     await Promise.all(recs.map(async (r: any, i: number) => {
       await supabase.from("tarefas_projeto").insert({
         user_id: p.user_id, projeto_id: id, titulo: r.titulo, descricao: r.descricao,
-        recorrente: false, ordem: base + i + 1,
-      });
+        ordem: base + i + 1,
+      } as any);
     }));
     toast.success(`${recs.length} tarefa(s) recorrente(s) copiada(s)`);
     inv();
