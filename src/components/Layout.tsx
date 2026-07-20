@@ -12,6 +12,8 @@ const sections = [
   { label: "Principal", items: [
     { to: "/dashboard", label: "Visão Geral", icon: Home },
     { to: "/tarefas", label: "Tarefas", icon: CheckSquare },
+    { to: "/atividades", label: "Atividades", icon: ListTodo },
+    { to: "/objetivos", label: "Objetivos", icon: Target },
     { to: "/calendario", label: "Calendário", icon: Calendar },
   ]},
   { label: "Pessoal", items: [
@@ -25,10 +27,8 @@ const sections = [
     { to: "/faturamento", label: "Faturamento", icon: DollarSign },
   ]},
   { label: "Criação", items: [
-    { to: "/objetivos", label: "Objetivos", icon: Target },
     { to: "/conteudo", label: "Conteúdo", icon: Sparkles },
     { to: "/acoes", label: "Ações", icon: Rocket },
-    { to: "/atividades", label: "Atividades", icon: ListTodo },
   ]},
 
   { label: "Produtividade", items: [
