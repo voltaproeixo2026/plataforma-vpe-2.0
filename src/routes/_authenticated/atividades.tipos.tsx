@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { PageHeader, Btn, Modal, Field, inputCls, EmptyState } from "@/components/ui-custom";
-import { ensureDefaultTipos } from "@/lib/atividades-helpers";
+import { ensureDefaultTipos } from "@/lib/atividades";
 import { toast } from "sonner";
 import { X } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/atividades/semanas/tipos")({
+export const Route = createFileRoute("/_authenticated/atividades/tipos")({
   component: TiposPage,
 });
 

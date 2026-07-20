@@ -1,88 +1,84 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Outlet, Link, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { CalendarDays, ChevronRight } from "lucide-react";
+import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { PageHeader, EmptyState, Tag } from "@/components/ui-custom";
-import { TAREFA_STATUS, todayISO } from "@/lib/atividades";
+import { CICLO_TAMANHO, ensureActiveCiclo, semanaAtualParaHoje } from "@/lib/atividades";
 
 export const Route = createFileRoute("/_authenticated/atividades")({
-  component: AgendaAtividadesPage,
+  head: () => ({ meta: [{ title: "Atividades — Volta Pro Eixo" }] }),
+  component: AtividadesLayout,
 });
 
-function AgendaAtividadesPage() {
+function AtividadesLayout() {
+  const path = useRouterState({ select: (s) => s.location.pathname });
   const { user } = useAuth();
-  const uid = user!.id;
-  const hoje = todayISO();
+  const uid = user?.id;
 
-  const { data: tarefas = [] } = useQuery({
-    queryKey: ["tarefas_com_data", uid],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("tarefas_projeto")
-        .select("id,titulo,status,data,projeto_id,projetos(titulo,tipos_projeto(nome,cor),semanas(nome))")
-        .eq("user_id", uid)
-        .not("data", "is", null)
-        .neq("status", "concluida")
-        .neq("status", "cancelada")
-        .order("data", { ascending: true });
-      return data ?? [];
-    },
+  useEffect(() => { if (uid) ensureActiveCiclo(uid); }, [uid]);
+
+  const { data: cicloAtivo } = useQuery({
+    queryKey: ["ciclo_ativo", uid],
+    enabled: !!uid,
+    queryFn: async () =>
+      (await supabase.from("ciclos").select("*").eq("status", "ativo").maybeSingle()).data ??
+      (await ensureActiveCiclo(uid!)),
+  });
+  const { data: semanasCiclo = [] } = useQuery({
+    queryKey: ["semanas_ciclo", cicloAtivo?.id],
+    enabled: !!cicloAtivo?.id,
+    queryFn: async () =>
+      (await supabase.from("semanas").select("*").eq("ciclo_id", cicloAtivo!.id).order("data_inicio")).data ?? [],
   });
 
-  const atrasadas = tarefas.filter((t: any) => t.data < hoje);
-  const hojeLista = tarefas.filter((t: any) => t.data === hoje);
-  const proximas = tarefas.filter((t: any) => t.data > hoje);
+  const semanaAtual = semanaAtualParaHoje(semanasCiclo);
+  const posicao = semanaAtual?.ordem_no_ciclo ?? semanasCiclo.length;
+  const pct = Math.min(100, (posicao / CICLO_TAMANHO) * 100);
+
+  const tabs = [
+    { to: "/atividades", label: "Projetos", exact: true },
+    { to: "/atividades/agenda", label: "Agenda" },
+    { to: "/atividades/intencoes", label: "Intenções" },
+    { to: "/atividades/semanas", label: "Gerenciar ciclo" },
+    { to: "/atividades/tipos", label: "Tipos" },
+  ];
 
   return (
     <div>
-      <PageHeader title="Atividades com data" subtitle="Visualização rápida do que tem dia marcado" />
-      {tarefas.length === 0 ? (
-        <EmptyState icon="📅" text="Nenhuma atividade com data pendente" />
-      ) : (
-        <div className="space-y-5">
-          <GrupoAgenda titulo="Hoje" tarefas={hojeLista} destaque="terracota" />
-          <GrupoAgenda titulo="Atrasadas" tarefas={atrasadas} destaque="amber" />
-          <GrupoAgenda titulo="Próximas" tarefas={proximas} destaque="sage" />
+      {cicloAtivo && (
+        <div className="mb-4 bg-bg-secondary border border-border rounded-xl p-4 flex flex-wrap items-center gap-3">
+          <div className="min-w-[180px]">
+            <div className="font-mono text-xs text-text-tertiary">Ciclo atual</div>
+            <div className="font-display text-lg">{cicloAtivo.nome}</div>
+            <div className="text-xs font-mono text-text-tertiary mt-0.5">
+              Semana {posicao || 0} de {CICLO_TAMANHO}
+            </div>
+          </div>
+          <div className="flex-1 min-w-[200px]">
+            <div className="h-2 bg-bg-tertiary rounded-full overflow-hidden">
+              <div className="h-full rounded-full bg-terracota transition-all" style={{ width: `${pct}%` }} />
+            </div>
+          </div>
         </div>
       )}
-    </div>
-  );
-}
 
-function GrupoAgenda({ titulo, tarefas, destaque }: { titulo: string; tarefas: any[]; destaque: "terracota" | "amber" | "sage" }) {
-  if (tarefas.length === 0) return null;
-  return (
-    <section>
-      <div className="label-mono mb-2">{titulo}</div>
-      <div className="space-y-2">
-        {tarefas.map((t) => {
-          const status = TAREFA_STATUS.find((s) => s.key === t.status);
-          const projeto = Array.isArray(t.projetos) ? t.projetos[0] : t.projetos;
+      <div className="flex gap-1 mb-6 overflow-x-auto border-b border-border">
+        {tabs.map((t) => {
+          const active = t.exact
+            ? path === t.to || path.startsWith("/atividades/projeto")
+            : path === t.to;
           return (
             <Link
-              key={t.id}
-              to="/atividades/projeto/$id"
-              params={{ id: t.projeto_id }}
-              className="bg-bg-primary border border-border rounded-xl p-4 hover:border-terracota transition flex items-center gap-3"
+              key={t.to}
+              to={t.to}
+              className={`px-4 py-2 font-mono text-sm border-b-2 transition whitespace-nowrap ${active ? "border-terracota text-terracota" : "border-transparent text-text-tertiary hover:text-text-primary"}`}
             >
-              <div className="w-11 h-11 rounded-lg bg-bg-secondary flex items-center justify-center text-terracota flex-shrink-0">
-                <CalendarDays size={18} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="font-display text-lg truncate">{t.titulo}</div>
-                <div className="text-xs font-mono text-text-tertiary mt-0.5">
-                  {new Date(t.data + "T12:00").toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit" })}
-                  {projeto?.titulo && ` · ${projeto.titulo}`}
-                  {projeto?.semanas?.nome && ` · ${projeto.semanas.nome}`}
-                </div>
-              </div>
-              <Tag color={destaque}>{status?.label ?? t.status}</Tag>
-              <ChevronRight size={16} className="text-text-tertiary" />
+              {t.label}
             </Link>
           );
         })}
       </div>
-    </section>
+      <Outlet />
+    </div>
   );
 }
