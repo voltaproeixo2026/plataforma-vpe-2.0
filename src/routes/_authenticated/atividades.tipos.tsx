@@ -1,0 +1,136 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
+import { PageHeader, Btn, Modal, Field, inputCls, EmptyState } from "@/components/ui-custom";
+import { ensureDefaultTipos } from "@/lib/atividades";
+import { toast } from "sonner";
+import { X } from "lucide-react";
+
+export const Route = createFileRoute("/_authenticated/atividades/tipos")({
+  component: TiposPage,
+});
+
+function TiposPage() {
+  const { user } = useAuth();
+  const uid = user!.id;
+  const qc = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState<any>(null);
+  const [delTarget, setDelTarget] = useState<any>(null);
+
+  useEffect(() => { ensureDefaultTipos(uid); }, [uid]);
+
+  const { data: tipos = [] } = useQuery({
+    queryKey: ["tipos_projeto", uid],
+    queryFn: async () => (await supabase.from("tipos_projeto").select("*").order("nome")).data ?? [],
+  });
+  const { data: counts = {} } = useQuery({
+    queryKey: ["tipos_counts", uid, tipos.length],
+    queryFn: async () => {
+      const { data } = await supabase.from("projetos").select("tipo_id");
+      const c: Record<string, number> = {};
+      (data ?? []).forEach((p: any) => { c[p.tipo_id] = (c[p.tipo_id] || 0) + 1; });
+      return c;
+    },
+  });
+
+  const inv = () => qc.invalidateQueries({ queryKey: ["tipos_projeto"] });
+
+  return (
+    <div>
+      <PageHeader title="Tipos de Projeto" subtitle="Categorias reutilizadas em Projetos e Registro de Tempo">
+        <Btn onClick={() => { setEditing(null); setOpen(true); }}>+ Novo tipo</Btn>
+      </PageHeader>
+
+      {tipos.length === 0 ? <EmptyState icon="🎨" text="Criando tipos padrão…" /> : (
+        <div className="grid md:grid-cols-2 gap-3">
+          {tipos.map((t: any) => (
+            <div key={t.id} className="bg-bg-primary border border-border rounded-xl p-4 flex items-center gap-3">
+              <span className="w-6 h-6 rounded-full" style={{ background: t.cor ?? "#999" }} />
+              <div className="flex-1">
+                <div className="font-display">{t.nome}</div>
+                <div className="text-xs font-mono text-text-tertiary">{counts[t.id] ?? 0} projeto(s)</div>
+              </div>
+              <button onClick={() => { setEditing(t); setOpen(true); }} className="text-xs font-mono text-text-tertiary hover:text-terracota">editar</button>
+              <button onClick={() => setDelTarget(t)} className="text-text-tertiary hover:text-[#e05c5c]"><X size={16} /></button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {open && <TipoModal uid={uid} editing={editing} onClose={() => setOpen(false)} onSaved={inv} />}
+      {delTarget && <DeleteModal tipo={delTarget} tipos={tipos} count={counts[delTarget.id] ?? 0} onClose={() => setDelTarget(null)} onDone={inv} />}
+    </div>
+  );
+}
+
+function TipoModal({ uid, editing, onClose, onSaved }: any) {
+  const e = editing ?? {};
+  const [nome, setNome] = useState(e.nome ?? "");
+  const [cor, setCor] = useState(e.cor ?? "#C4714A");
+
+  const save = async () => {
+    if (!nome.trim()) return toast.error("Nome obrigatório");
+    if (editing?.id) {
+      await supabase.from("tipos_projeto").update({ nome, cor }).eq("id", editing.id);
+    } else {
+      await supabase.from("tipos_projeto").insert({ nome, cor, user_id: uid });
+    }
+    toast.success("Salvo");
+    onSaved(); onClose();
+  };
+
+  return (
+    <Modal open onClose={onClose} title={editing ? "Editar tipo" : "Novo tipo"}>
+      <Field label="Nome *"><input className={inputCls} value={nome} onChange={(e) => setNome(e.target.value)} autoFocus /></Field>
+      <Field label="Cor"><input type="color" className="w-16 h-10 rounded border border-border" value={cor} onChange={(e) => setCor(e.target.value)} /></Field>
+      <div className="flex gap-2 justify-end mt-4">
+        <Btn variant="ghost" onClick={onClose}>Cancelar</Btn>
+        <Btn onClick={save}>Salvar</Btn>
+      </div>
+    </Modal>
+  );
+}
+
+function DeleteModal({ tipo, tipos, count, onClose, onDone }: any) {
+  const outros = tipos.filter((t: any) => t.id !== tipo.id);
+  const [reassign, setReassign] = useState(outros[0]?.id ?? "");
+
+  const del = async () => {
+    if (count > 0) {
+      if (!reassign) return toast.error("Escolha um tipo destino");
+      const { error: e1 } = await supabase.from("projetos").update({ tipo_id: reassign }).eq("tipo_id", tipo.id);
+      if (e1) return toast.error(e1.message);
+      await supabase.from("registros_tempo").update({ tipo_id: reassign }).eq("tipo_id", tipo.id);
+    }
+    const { error } = await supabase.from("tipos_projeto").delete().eq("id", tipo.id);
+    if (error) return toast.error(error.message);
+    toast.success("Tipo excluído");
+    onDone(); onClose();
+  };
+
+  return (
+    <Modal open onClose={onClose} title={`Excluir "${tipo.nome}"?`}>
+      {count > 0 ? (
+        <>
+          <p className="text-sm text-text-secondary mb-3">
+            Este tipo está em uso em <b>{count} projeto(s)</b>. Escolha um tipo para reatribuir antes de excluir:
+          </p>
+          <Field label="Reatribuir para">
+            <select className={inputCls} value={reassign} onChange={(e) => setReassign(e.target.value)}>
+              {outros.map((t: any) => <option key={t.id} value={t.id}>{t.nome}</option>)}
+            </select>
+          </Field>
+        </>
+      ) : (
+        <p className="text-sm text-text-secondary mb-3">Nenhum projeto usa esse tipo. Pode excluir.</p>
+      )}
+      <div className="flex gap-2 justify-end mt-4">
+        <Btn variant="ghost" onClick={onClose}>Cancelar</Btn>
+        <Btn variant="danger" onClick={del}>Excluir</Btn>
+      </div>
+    </Modal>
+  );
+}

@@ -27,8 +27,10 @@ import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated/cr
 import { Route as AuthenticatedConteudoRouteImport } from './routes/_authenticated/conteudo'
 import { Route as AuthenticatedCicloRouteImport } from './routes/_authenticated/ciclo'
 import { Route as AuthenticatedCalendarioRouteImport } from './routes/_authenticated/calendario'
-import { Route as AuthenticatedAtividadesRouteImport } from './routes/_authenticated/atividades'
 import { Route as AuthenticatedAcoesRouteImport } from './routes/_authenticated/acoes'
+import { Route as AuthenticatedAtividadesIndexRouteImport } from './routes/_authenticated/atividades.index'
+import { Route as AuthenticatedAtividadesIntencoesRouteImport } from './routes/_authenticated/atividades.intencoes'
+import { Route as AuthenticatedAtividadesAgendaRouteImport } from './routes/_authenticated/atividades.agenda'
 import { Route as AuthenticatedAtividadesProjetoIdRouteImport } from './routes/_authenticated/atividades.projeto.$id'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -122,21 +124,34 @@ const AuthenticatedCalendarioRoute = AuthenticatedCalendarioRouteImport.update({
   path: '/calendario',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedAtividadesRoute = AuthenticatedAtividadesRouteImport.update({
-  id: '/atividades',
-  path: '/atividades',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedAcoesRoute = AuthenticatedAcoesRouteImport.update({
   id: '/acoes',
   path: '/acoes',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAtividadesIndexRoute =
+  AuthenticatedAtividadesIndexRouteImport.update({
+    id: '/atividades/',
+    path: '/atividades/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAtividadesIntencoesRoute =
+  AuthenticatedAtividadesIntencoesRouteImport.update({
+    id: '/atividades/intencoes',
+    path: '/atividades/intencoes',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAtividadesAgendaRoute =
+  AuthenticatedAtividadesAgendaRouteImport.update({
+    id: '/atividades/agenda',
+    path: '/atividades/agenda',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAtividadesProjetoIdRoute =
   AuthenticatedAtividadesProjetoIdRouteImport.update({
-    id: '/projeto/$id',
-    path: '/projeto/$id',
-    getParentRoute: () => AuthenticatedAtividadesRoute,
+    id: '/atividades/projeto/$id',
+    path: '/atividades/projeto/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -145,7 +160,6 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/acoes': typeof AuthenticatedAcoesRoute
-  '/atividades': typeof AuthenticatedAtividadesRouteWithChildren
   '/calendario': typeof AuthenticatedCalendarioRoute
   '/ciclo': typeof AuthenticatedCicloRoute
   '/conteudo': typeof AuthenticatedConteudoRoute
@@ -159,6 +173,9 @@ export interface FileRoutesByFullPath {
   '/social-selling': typeof AuthenticatedSocialSellingRoute
   '/tarefas': typeof AuthenticatedTarefasRoute
   '/tempo': typeof AuthenticatedTempoRoute
+  '/atividades/agenda': typeof AuthenticatedAtividadesAgendaRoute
+  '/atividades/intencoes': typeof AuthenticatedAtividadesIntencoesRoute
+  '/atividades/': typeof AuthenticatedAtividadesIndexRoute
   '/atividades/projeto/$id': typeof AuthenticatedAtividadesProjetoIdRoute
 }
 export interface FileRoutesByTo {
@@ -167,7 +184,6 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/acoes': typeof AuthenticatedAcoesRoute
-  '/atividades': typeof AuthenticatedAtividadesRouteWithChildren
   '/calendario': typeof AuthenticatedCalendarioRoute
   '/ciclo': typeof AuthenticatedCicloRoute
   '/conteudo': typeof AuthenticatedConteudoRoute
@@ -181,6 +197,9 @@ export interface FileRoutesByTo {
   '/social-selling': typeof AuthenticatedSocialSellingRoute
   '/tarefas': typeof AuthenticatedTarefasRoute
   '/tempo': typeof AuthenticatedTempoRoute
+  '/atividades/agenda': typeof AuthenticatedAtividadesAgendaRoute
+  '/atividades/intencoes': typeof AuthenticatedAtividadesIntencoesRoute
+  '/atividades': typeof AuthenticatedAtividadesIndexRoute
   '/atividades/projeto/$id': typeof AuthenticatedAtividadesProjetoIdRoute
 }
 export interface FileRoutesById {
@@ -191,7 +210,6 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/acoes': typeof AuthenticatedAcoesRoute
-  '/_authenticated/atividades': typeof AuthenticatedAtividadesRouteWithChildren
   '/_authenticated/calendario': typeof AuthenticatedCalendarioRoute
   '/_authenticated/ciclo': typeof AuthenticatedCicloRoute
   '/_authenticated/conteudo': typeof AuthenticatedConteudoRoute
@@ -205,6 +223,9 @@ export interface FileRoutesById {
   '/_authenticated/social-selling': typeof AuthenticatedSocialSellingRoute
   '/_authenticated/tarefas': typeof AuthenticatedTarefasRoute
   '/_authenticated/tempo': typeof AuthenticatedTempoRoute
+  '/_authenticated/atividades/agenda': typeof AuthenticatedAtividadesAgendaRoute
+  '/_authenticated/atividades/intencoes': typeof AuthenticatedAtividadesIntencoesRoute
+  '/_authenticated/atividades/': typeof AuthenticatedAtividadesIndexRoute
   '/_authenticated/atividades/projeto/$id': typeof AuthenticatedAtividadesProjetoIdRoute
 }
 export interface FileRouteTypes {
@@ -215,7 +236,6 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap.xml'
     | '/acoes'
-    | '/atividades'
     | '/calendario'
     | '/ciclo'
     | '/conteudo'
@@ -229,6 +249,9 @@ export interface FileRouteTypes {
     | '/social-selling'
     | '/tarefas'
     | '/tempo'
+    | '/atividades/agenda'
+    | '/atividades/intencoes'
+    | '/atividades/'
     | '/atividades/projeto/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -237,7 +260,6 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap.xml'
     | '/acoes'
-    | '/atividades'
     | '/calendario'
     | '/ciclo'
     | '/conteudo'
@@ -251,6 +273,9 @@ export interface FileRouteTypes {
     | '/social-selling'
     | '/tarefas'
     | '/tempo'
+    | '/atividades/agenda'
+    | '/atividades/intencoes'
+    | '/atividades'
     | '/atividades/projeto/$id'
   id:
     | '__root__'
@@ -260,7 +285,6 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap.xml'
     | '/_authenticated/acoes'
-    | '/_authenticated/atividades'
     | '/_authenticated/calendario'
     | '/_authenticated/ciclo'
     | '/_authenticated/conteudo'
@@ -274,6 +298,9 @@ export interface FileRouteTypes {
     | '/_authenticated/social-selling'
     | '/_authenticated/tarefas'
     | '/_authenticated/tempo'
+    | '/_authenticated/atividades/agenda'
+    | '/_authenticated/atividades/intencoes'
+    | '/_authenticated/atividades/'
     | '/_authenticated/atividades/projeto/$id'
   fileRoutesById: FileRoutesById
 }
@@ -413,13 +440,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCalendarioRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/atividades': {
-      id: '/_authenticated/atividades'
-      path: '/atividades'
-      fullPath: '/atividades'
-      preLoaderRoute: typeof AuthenticatedAtividadesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/acoes': {
       id: '/_authenticated/acoes'
       path: '/acoes'
@@ -427,34 +447,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAcoesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/atividades/': {
+      id: '/_authenticated/atividades/'
+      path: '/atividades'
+      fullPath: '/atividades/'
+      preLoaderRoute: typeof AuthenticatedAtividadesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/atividades/intencoes': {
+      id: '/_authenticated/atividades/intencoes'
+      path: '/atividades/intencoes'
+      fullPath: '/atividades/intencoes'
+      preLoaderRoute: typeof AuthenticatedAtividadesIntencoesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/atividades/agenda': {
+      id: '/_authenticated/atividades/agenda'
+      path: '/atividades/agenda'
+      fullPath: '/atividades/agenda'
+      preLoaderRoute: typeof AuthenticatedAtividadesAgendaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/atividades/projeto/$id': {
       id: '/_authenticated/atividades/projeto/$id'
-      path: '/projeto/$id'
+      path: '/atividades/projeto/$id'
       fullPath: '/atividades/projeto/$id'
       preLoaderRoute: typeof AuthenticatedAtividadesProjetoIdRouteImport
-      parentRoute: typeof AuthenticatedAtividadesRoute
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
 
-interface AuthenticatedAtividadesRouteChildren {
-  AuthenticatedAtividadesProjetoIdRoute: typeof AuthenticatedAtividadesProjetoIdRoute
-}
-
-const AuthenticatedAtividadesRouteChildren: AuthenticatedAtividadesRouteChildren =
-  {
-    AuthenticatedAtividadesProjetoIdRoute:
-      AuthenticatedAtividadesProjetoIdRoute,
-  }
-
-const AuthenticatedAtividadesRouteWithChildren =
-  AuthenticatedAtividadesRoute._addFileChildren(
-    AuthenticatedAtividadesRouteChildren,
-  )
-
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAcoesRoute: typeof AuthenticatedAcoesRoute
-  AuthenticatedAtividadesRoute: typeof AuthenticatedAtividadesRouteWithChildren
   AuthenticatedCalendarioRoute: typeof AuthenticatedCalendarioRoute
   AuthenticatedCicloRoute: typeof AuthenticatedCicloRoute
   AuthenticatedConteudoRoute: typeof AuthenticatedConteudoRoute
@@ -468,11 +493,14 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSocialSellingRoute: typeof AuthenticatedSocialSellingRoute
   AuthenticatedTarefasRoute: typeof AuthenticatedTarefasRoute
   AuthenticatedTempoRoute: typeof AuthenticatedTempoRoute
+  AuthenticatedAtividadesAgendaRoute: typeof AuthenticatedAtividadesAgendaRoute
+  AuthenticatedAtividadesIntencoesRoute: typeof AuthenticatedAtividadesIntencoesRoute
+  AuthenticatedAtividadesIndexRoute: typeof AuthenticatedAtividadesIndexRoute
+  AuthenticatedAtividadesProjetoIdRoute: typeof AuthenticatedAtividadesProjetoIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAcoesRoute: AuthenticatedAcoesRoute,
-  AuthenticatedAtividadesRoute: AuthenticatedAtividadesRouteWithChildren,
   AuthenticatedCalendarioRoute: AuthenticatedCalendarioRoute,
   AuthenticatedCicloRoute: AuthenticatedCicloRoute,
   AuthenticatedConteudoRoute: AuthenticatedConteudoRoute,
@@ -486,6 +514,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSocialSellingRoute: AuthenticatedSocialSellingRoute,
   AuthenticatedTarefasRoute: AuthenticatedTarefasRoute,
   AuthenticatedTempoRoute: AuthenticatedTempoRoute,
+  AuthenticatedAtividadesAgendaRoute: AuthenticatedAtividadesAgendaRoute,
+  AuthenticatedAtividadesIntencoesRoute: AuthenticatedAtividadesIntencoesRoute,
+  AuthenticatedAtividadesIndexRoute: AuthenticatedAtividadesIndexRoute,
+  AuthenticatedAtividadesProjetoIdRoute: AuthenticatedAtividadesProjetoIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -501,13 +533,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
