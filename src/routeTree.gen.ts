@@ -27,8 +27,11 @@ import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated/cr
 import { Route as AuthenticatedConteudoRouteImport } from './routes/_authenticated/conteudo'
 import { Route as AuthenticatedCicloRouteImport } from './routes/_authenticated/ciclo'
 import { Route as AuthenticatedCalendarioRouteImport } from './routes/_authenticated/calendario'
+import { Route as AuthenticatedAtividadesRouteImport } from './routes/_authenticated/atividades'
 import { Route as AuthenticatedAcoesRouteImport } from './routes/_authenticated/acoes'
 import { Route as AuthenticatedAtividadesIndexRouteImport } from './routes/_authenticated/atividades.index'
+import { Route as AuthenticatedAtividadesTiposRouteImport } from './routes/_authenticated/atividades.tipos'
+import { Route as AuthenticatedAtividadesSemanasRouteImport } from './routes/_authenticated/atividades.semanas'
 import { Route as AuthenticatedAtividadesIntencoesRouteImport } from './routes/_authenticated/atividades.intencoes'
 import { Route as AuthenticatedAtividadesAgendaRouteImport } from './routes/_authenticated/atividades.agenda'
 import { Route as AuthenticatedAtividadesProjetoIdRouteImport } from './routes/_authenticated/atividades.projeto.$id'
@@ -124,6 +127,11 @@ const AuthenticatedCalendarioRoute = AuthenticatedCalendarioRouteImport.update({
   path: '/calendario',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAtividadesRoute = AuthenticatedAtividadesRouteImport.update({
+  id: '/atividades',
+  path: '/atividades',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAcoesRoute = AuthenticatedAcoesRouteImport.update({
   id: '/acoes',
   path: '/acoes',
@@ -131,27 +139,39 @@ const AuthenticatedAcoesRoute = AuthenticatedAcoesRouteImport.update({
 } as any)
 const AuthenticatedAtividadesIndexRoute =
   AuthenticatedAtividadesIndexRouteImport.update({
-    id: '/atividades/',
-    path: '/atividades/',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedAtividadesRoute,
+  } as any)
+const AuthenticatedAtividadesTiposRoute =
+  AuthenticatedAtividadesTiposRouteImport.update({
+    id: '/tipos',
+    path: '/tipos',
+    getParentRoute: () => AuthenticatedAtividadesRoute,
+  } as any)
+const AuthenticatedAtividadesSemanasRoute =
+  AuthenticatedAtividadesSemanasRouteImport.update({
+    id: '/semanas',
+    path: '/semanas',
+    getParentRoute: () => AuthenticatedAtividadesRoute,
   } as any)
 const AuthenticatedAtividadesIntencoesRoute =
   AuthenticatedAtividadesIntencoesRouteImport.update({
-    id: '/atividades/intencoes',
-    path: '/atividades/intencoes',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/intencoes',
+    path: '/intencoes',
+    getParentRoute: () => AuthenticatedAtividadesRoute,
   } as any)
 const AuthenticatedAtividadesAgendaRoute =
   AuthenticatedAtividadesAgendaRouteImport.update({
-    id: '/atividades/agenda',
-    path: '/atividades/agenda',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/agenda',
+    path: '/agenda',
+    getParentRoute: () => AuthenticatedAtividadesRoute,
   } as any)
 const AuthenticatedAtividadesProjetoIdRoute =
   AuthenticatedAtividadesProjetoIdRouteImport.update({
-    id: '/atividades/projeto/$id',
-    path: '/atividades/projeto/$id',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/projeto/$id',
+    path: '/projeto/$id',
+    getParentRoute: () => AuthenticatedAtividadesRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -160,6 +180,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/acoes': typeof AuthenticatedAcoesRoute
+  '/atividades': typeof AuthenticatedAtividadesRouteWithChildren
   '/calendario': typeof AuthenticatedCalendarioRoute
   '/ciclo': typeof AuthenticatedCicloRoute
   '/conteudo': typeof AuthenticatedConteudoRoute
@@ -175,6 +196,8 @@ export interface FileRoutesByFullPath {
   '/tempo': typeof AuthenticatedTempoRoute
   '/atividades/agenda': typeof AuthenticatedAtividadesAgendaRoute
   '/atividades/intencoes': typeof AuthenticatedAtividadesIntencoesRoute
+  '/atividades/semanas': typeof AuthenticatedAtividadesSemanasRoute
+  '/atividades/tipos': typeof AuthenticatedAtividadesTiposRoute
   '/atividades/': typeof AuthenticatedAtividadesIndexRoute
   '/atividades/projeto/$id': typeof AuthenticatedAtividadesProjetoIdRoute
 }
@@ -199,6 +222,8 @@ export interface FileRoutesByTo {
   '/tempo': typeof AuthenticatedTempoRoute
   '/atividades/agenda': typeof AuthenticatedAtividadesAgendaRoute
   '/atividades/intencoes': typeof AuthenticatedAtividadesIntencoesRoute
+  '/atividades/semanas': typeof AuthenticatedAtividadesSemanasRoute
+  '/atividades/tipos': typeof AuthenticatedAtividadesTiposRoute
   '/atividades': typeof AuthenticatedAtividadesIndexRoute
   '/atividades/projeto/$id': typeof AuthenticatedAtividadesProjetoIdRoute
 }
@@ -210,6 +235,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/acoes': typeof AuthenticatedAcoesRoute
+  '/_authenticated/atividades': typeof AuthenticatedAtividadesRouteWithChildren
   '/_authenticated/calendario': typeof AuthenticatedCalendarioRoute
   '/_authenticated/ciclo': typeof AuthenticatedCicloRoute
   '/_authenticated/conteudo': typeof AuthenticatedConteudoRoute
@@ -225,6 +251,8 @@ export interface FileRoutesById {
   '/_authenticated/tempo': typeof AuthenticatedTempoRoute
   '/_authenticated/atividades/agenda': typeof AuthenticatedAtividadesAgendaRoute
   '/_authenticated/atividades/intencoes': typeof AuthenticatedAtividadesIntencoesRoute
+  '/_authenticated/atividades/semanas': typeof AuthenticatedAtividadesSemanasRoute
+  '/_authenticated/atividades/tipos': typeof AuthenticatedAtividadesTiposRoute
   '/_authenticated/atividades/': typeof AuthenticatedAtividadesIndexRoute
   '/_authenticated/atividades/projeto/$id': typeof AuthenticatedAtividadesProjetoIdRoute
 }
@@ -236,6 +264,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap.xml'
     | '/acoes'
+    | '/atividades'
     | '/calendario'
     | '/ciclo'
     | '/conteudo'
@@ -251,6 +280,8 @@ export interface FileRouteTypes {
     | '/tempo'
     | '/atividades/agenda'
     | '/atividades/intencoes'
+    | '/atividades/semanas'
+    | '/atividades/tipos'
     | '/atividades/'
     | '/atividades/projeto/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -275,6 +306,8 @@ export interface FileRouteTypes {
     | '/tempo'
     | '/atividades/agenda'
     | '/atividades/intencoes'
+    | '/atividades/semanas'
+    | '/atividades/tipos'
     | '/atividades'
     | '/atividades/projeto/$id'
   id:
@@ -285,6 +318,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap.xml'
     | '/_authenticated/acoes'
+    | '/_authenticated/atividades'
     | '/_authenticated/calendario'
     | '/_authenticated/ciclo'
     | '/_authenticated/conteudo'
@@ -300,6 +334,8 @@ export interface FileRouteTypes {
     | '/_authenticated/tempo'
     | '/_authenticated/atividades/agenda'
     | '/_authenticated/atividades/intencoes'
+    | '/_authenticated/atividades/semanas'
+    | '/_authenticated/atividades/tipos'
     | '/_authenticated/atividades/'
     | '/_authenticated/atividades/projeto/$id'
   fileRoutesById: FileRoutesById
@@ -440,6 +476,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCalendarioRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/atividades': {
+      id: '/_authenticated/atividades'
+      path: '/atividades'
+      fullPath: '/atividades'
+      preLoaderRoute: typeof AuthenticatedAtividadesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/acoes': {
       id: '/_authenticated/acoes'
       path: '/acoes'
@@ -449,37 +492,78 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/atividades/': {
       id: '/_authenticated/atividades/'
-      path: '/atividades'
+      path: '/'
       fullPath: '/atividades/'
       preLoaderRoute: typeof AuthenticatedAtividadesIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedAtividadesRoute
+    }
+    '/_authenticated/atividades/tipos': {
+      id: '/_authenticated/atividades/tipos'
+      path: '/tipos'
+      fullPath: '/atividades/tipos'
+      preLoaderRoute: typeof AuthenticatedAtividadesTiposRouteImport
+      parentRoute: typeof AuthenticatedAtividadesRoute
+    }
+    '/_authenticated/atividades/semanas': {
+      id: '/_authenticated/atividades/semanas'
+      path: '/semanas'
+      fullPath: '/atividades/semanas'
+      preLoaderRoute: typeof AuthenticatedAtividadesSemanasRouteImport
+      parentRoute: typeof AuthenticatedAtividadesRoute
     }
     '/_authenticated/atividades/intencoes': {
       id: '/_authenticated/atividades/intencoes'
-      path: '/atividades/intencoes'
+      path: '/intencoes'
       fullPath: '/atividades/intencoes'
       preLoaderRoute: typeof AuthenticatedAtividadesIntencoesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedAtividadesRoute
     }
     '/_authenticated/atividades/agenda': {
       id: '/_authenticated/atividades/agenda'
-      path: '/atividades/agenda'
+      path: '/agenda'
       fullPath: '/atividades/agenda'
       preLoaderRoute: typeof AuthenticatedAtividadesAgendaRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedAtividadesRoute
     }
     '/_authenticated/atividades/projeto/$id': {
       id: '/_authenticated/atividades/projeto/$id'
-      path: '/atividades/projeto/$id'
+      path: '/projeto/$id'
       fullPath: '/atividades/projeto/$id'
       preLoaderRoute: typeof AuthenticatedAtividadesProjetoIdRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedAtividadesRoute
     }
   }
 }
 
+interface AuthenticatedAtividadesRouteChildren {
+  AuthenticatedAtividadesAgendaRoute: typeof AuthenticatedAtividadesAgendaRoute
+  AuthenticatedAtividadesIntencoesRoute: typeof AuthenticatedAtividadesIntencoesRoute
+  AuthenticatedAtividadesSemanasRoute: typeof AuthenticatedAtividadesSemanasRoute
+  AuthenticatedAtividadesTiposRoute: typeof AuthenticatedAtividadesTiposRoute
+  AuthenticatedAtividadesIndexRoute: typeof AuthenticatedAtividadesIndexRoute
+  AuthenticatedAtividadesProjetoIdRoute: typeof AuthenticatedAtividadesProjetoIdRoute
+}
+
+const AuthenticatedAtividadesRouteChildren: AuthenticatedAtividadesRouteChildren =
+  {
+    AuthenticatedAtividadesAgendaRoute: AuthenticatedAtividadesAgendaRoute,
+    AuthenticatedAtividadesIntencoesRoute:
+      AuthenticatedAtividadesIntencoesRoute,
+    AuthenticatedAtividadesSemanasRoute: AuthenticatedAtividadesSemanasRoute,
+    AuthenticatedAtividadesTiposRoute: AuthenticatedAtividadesTiposRoute,
+    AuthenticatedAtividadesIndexRoute: AuthenticatedAtividadesIndexRoute,
+    AuthenticatedAtividadesProjetoIdRoute:
+      AuthenticatedAtividadesProjetoIdRoute,
+  }
+
+const AuthenticatedAtividadesRouteWithChildren =
+  AuthenticatedAtividadesRoute._addFileChildren(
+    AuthenticatedAtividadesRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAcoesRoute: typeof AuthenticatedAcoesRoute
+  AuthenticatedAtividadesRoute: typeof AuthenticatedAtividadesRouteWithChildren
   AuthenticatedCalendarioRoute: typeof AuthenticatedCalendarioRoute
   AuthenticatedCicloRoute: typeof AuthenticatedCicloRoute
   AuthenticatedConteudoRoute: typeof AuthenticatedConteudoRoute
@@ -493,14 +577,11 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSocialSellingRoute: typeof AuthenticatedSocialSellingRoute
   AuthenticatedTarefasRoute: typeof AuthenticatedTarefasRoute
   AuthenticatedTempoRoute: typeof AuthenticatedTempoRoute
-  AuthenticatedAtividadesAgendaRoute: typeof AuthenticatedAtividadesAgendaRoute
-  AuthenticatedAtividadesIntencoesRoute: typeof AuthenticatedAtividadesIntencoesRoute
-  AuthenticatedAtividadesIndexRoute: typeof AuthenticatedAtividadesIndexRoute
-  AuthenticatedAtividadesProjetoIdRoute: typeof AuthenticatedAtividadesProjetoIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAcoesRoute: AuthenticatedAcoesRoute,
+  AuthenticatedAtividadesRoute: AuthenticatedAtividadesRouteWithChildren,
   AuthenticatedCalendarioRoute: AuthenticatedCalendarioRoute,
   AuthenticatedCicloRoute: AuthenticatedCicloRoute,
   AuthenticatedConteudoRoute: AuthenticatedConteudoRoute,
@@ -514,10 +595,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSocialSellingRoute: AuthenticatedSocialSellingRoute,
   AuthenticatedTarefasRoute: AuthenticatedTarefasRoute,
   AuthenticatedTempoRoute: AuthenticatedTempoRoute,
-  AuthenticatedAtividadesAgendaRoute: AuthenticatedAtividadesAgendaRoute,
-  AuthenticatedAtividadesIntencoesRoute: AuthenticatedAtividadesIntencoesRoute,
-  AuthenticatedAtividadesIndexRoute: AuthenticatedAtividadesIndexRoute,
-  AuthenticatedAtividadesProjetoIdRoute: AuthenticatedAtividadesProjetoIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
