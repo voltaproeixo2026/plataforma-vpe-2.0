@@ -1,8 +1,8 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  Home, CheckSquare, Calendar, Users, Workflow, MessageCircle, DollarSign,
-  Target, Sparkles, Rocket, Clock, LogOut, Menu, Moon, RefreshCw, User, ListTodo,
+  Home, Calendar, Users, Workflow, MessageCircle, DollarSign,
+  Sparkles, Rocket, Clock, LogOut, Menu, Moon, ListTodo,
 } from "lucide-react";
 
 import { useState } from "react";
@@ -11,9 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 const sections = [
   { label: "Principal", items: [
     { to: "/dashboard", label: "Visão Geral", icon: Home },
-    { to: "/tarefas", label: "Tarefas", icon: CheckSquare },
     { to: "/atividades", label: "Atividades", icon: ListTodo },
-    { to: "/objetivos", label: "Objetivos", icon: Target },
     { to: "/calendario", label: "Calendário", icon: Calendar },
   ]},
   { label: "Pessoal", items: [
@@ -21,7 +19,6 @@ const sections = [
   ]},
   { label: "Negócio", items: [
     { to: "/crm", label: "CRM", icon: Users },
-    { to: "/follow-up", label: "Follow Up", icon: RefreshCw },
     { to: "/funis", label: "Funis de Vendas", icon: Workflow },
     { to: "/social-selling", label: "Abordagens", icon: MessageCircle },
     { to: "/faturamento", label: "Faturamento", icon: DollarSign },
@@ -38,11 +35,12 @@ const sections = [
 
 const mobileItems = [
   { to: "/dashboard", label: "Home", icon: Home },
-  { to: "/tarefas", label: "Tarefas", icon: CheckSquare },
+  { to: "/atividades", label: "Ativ.", icon: ListTodo },
   { to: "/crm", label: "CRM", icon: Users },
   { to: "/social-selling", label: "Abord.", icon: MessageCircle },
   { to: "/faturamento", label: "Fatur.", icon: DollarSign },
 ] as const;
+
 
 export function AppShell({ children, uid }: { children: React.ReactNode; uid: string }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
