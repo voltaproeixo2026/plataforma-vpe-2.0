@@ -57,15 +57,15 @@ function HomePage() {
   const { data } = useQuery({
     queryKey: ["home", uid],
     queryFn: async () => {
-      const [contacts, hot, ssToday, ssWeek, fatMonth, fatMeta, ssCfg, tasks, projTarefas, events] = await Promise.all([
+      const { start: fatStart, end: fatEnd } = monthRange(mref);
+      const [contacts, hot, ssToday, ssWeek, fatMonth, fatMeta, ssCfg, projTarefas, events] = await Promise.all([
         supabase.from("contacts").select("id", { count: "exact", head: true }),
         supabase.from("contacts").select("id", { count: "exact", head: true }).eq("temperatura", "quente"),
         supabase.from("ss_counts").select("abordagem").eq("date", today).maybeSingle(),
         supabase.from("ss_counts").select("abordagem").gte("date", monday.toISOString().slice(0, 10)).lte("date", sunday.toISOString().slice(0, 10)),
-        supabase.from("fat_entries").select("value").like("date", `${mref}%`),
+        supabase.from("fat_entries").select("value").gte("date", fatStart).lte("date", fatEnd),
         supabase.from("fat_meta").select("value").eq("month_ref", mref).maybeSingle(),
         supabase.from("ss_config").select("*").maybeSingle(),
-        supabase.from("tasks").select("*").eq("date", today).eq("done", false).order("priority"),
         supabase.from("tarefas_projeto")
           .select("id,titulo,status,data,projeto_id,projetos(titulo)")
           .eq("user_id", uid)
@@ -82,7 +82,6 @@ function HomePage() {
         fatMonth: (fatMonth.data ?? []).reduce((a, b) => a + Number(b.value), 0),
         fatMeta: Number(fatMeta.data?.value ?? 0),
         ssCfg: ssCfg.data ?? { meta_day: 10 },
-        tasks: tasks.data ?? [],
         projTarefas: projTarefas.data ?? [],
         events: events.data ?? [],
       };
@@ -90,9 +89,8 @@ function HomePage() {
   });
 
   const d = data;
-  const pOrder: Record<string, number> = { alta: 0, media: 1, baixa: 2 };
-  const sortedTasks = (d?.tasks ?? []).slice().sort((a: any, b: any) => pOrder[a.priority] - pOrder[b.priority]).slice(0, 5);
   const projTarefas = (d?.projTarefas ?? []).slice(0, 5);
+
 
   return (
     <div>
