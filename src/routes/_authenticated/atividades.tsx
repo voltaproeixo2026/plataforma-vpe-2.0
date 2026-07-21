@@ -36,12 +36,12 @@ function AtividadesLayout() {
   const pct = Math.min(100, (posicao / CICLO_TAMANHO) * 100);
 
   const tabs = [
-    { to: "/atividades", label: "Projetos", exact: true },
-    { to: "/atividades/agenda", label: "Agenda" },
-    { to: "/atividades/intencoes", label: "Intenções" },
-    { to: "/atividades/semanas", label: "Gerenciar ciclo" },
-    { to: "/atividades/tipos", label: "Tipos" },
-  ];
+  { to: "/atividades", label: "Projetos" },
+  { to: "/atividades/semanas", label: "Gerenciar ciclo" },
+  { to: "/atividades/agenda", label: "Agenda" },
+  { to: "/atividades/intencoes", label: "Intenções" },
+  { to: "/atividades/tipos", label: "Tipos" },
+];
 
   return (
     <div>
