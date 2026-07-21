@@ -1,265 +1,283 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { useMemo, useState } from "react";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { PageHeader, Btn, Modal, Field, inputCls, Tag, EmptyState } from "@/components/ui-custom";
-import { TIME_CATEGORIES, fmtMins, getMonday, addDays, todayISO, monthRef, monthRange } from "@/lib/biz";
-import { Play, Pause, Square, Pencil, X } from "lucide-react";
+import { PageHeader, EmptyState, Chip, Btn, inputCls } from "@/components/ui-custom";
+import { fmtHoras, fmtDateBR, todayISO, addDays } from "@/lib/atividades";
+import { Pencil, X, Check } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/tempo")({
-  head: () => ({ meta: [{ title: "Tempo — Painel" }] }),
-  component: TimePage,
+  head: () => ({ meta: [{ title: "Registro de Tempo — Volta Pro Eixo" }] }),
+  component: TempoPage,
 });
 
-function TimePage() {
+type Periodo = "7" | "14" | "30" | "semana";
+
+function getMondayISO(): string {
+  const d = new Date();
+  const dow = (d.getDay() + 6) % 7;
+  d.setDate(d.getDate() - dow);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function rangeFor(periodo: Periodo): { inicio: string; fim: string } {
+  const hoje = todayISO();
+  if (periodo === "semana") {
+    const inicio = getMondayISO();
+    return { inicio, fim: addDays(inicio, 6) };
+  }
+  const dias = parseInt(periodo, 10);
+  return { inicio: addDays(hoje, -(dias - 1)), fim: hoje };
+}
+
+function TempoPage() {
   const { user } = useAuth();
-  const uid = user!.id;
+  if (!user) return null;
+  const uid = user.id;
   const qc = useQueryClient();
-  const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState<any>(null);
 
-  const [secs, setSecs] = useState(0);
-  const [running, setRunning] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [tActivity, setTActivity] = useState("");
-  const [tCategory, setTCategory] = useState("conteudo");
-  const startRef = useRef<number | null>(null);
-  const baseRef = useRef<number>(0);
-  const intervalRef = useRef<any>(null);
+  const [periodo, setPeriodo] = useState<Periodo>("7");
+  const { inicio, fim } = useMemo(() => rangeFor(periodo), [periodo]);
 
-  const tick = () => {
-    if (startRef.current != null) {
-      const now = Date.now();
-      setSecs(baseRef.current + Math.floor((now - startRef.current) / 1000));
+  const { data: registros = [] } = useQuery({
+    queryKey: ["tempo-registros", uid, inicio, fim],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("registros_tempo")
+        .select("*, projetos(id, titulo, tipos_projeto(id, nome, cor))")
+        .eq("user_id", uid)
+        .gte("data", inicio)
+        .lte("data", fim)
+        .order("data", { ascending: false });
+      return data || [];
+    },
+  });
+
+  const totalMin = registros.reduce((a: number, r: any) => a + (r.duracao_minutos || 0), 0);
+
+  // Distribuição por tipo de projeto
+  const porTipo = useMemo(() => {
+    const map = new Map<string, { nome: string; cor: string; mins: number }>();
+    for (const r of registros as any[]) {
+      const t = r.projetos?.tipos_projeto;
+      const key = t?.id ?? "sem-tipo";
+      const nome = t?.nome ?? "Sem tipo";
+      const cor = t?.cor ?? "#999";
+      const prev = map.get(key) ?? { nome, cor, mins: 0 };
+      prev.mins += r.duracao_minutos || 0;
+      map.set(key, prev);
     }
-  };
+    return Array.from(map.values()).sort((a, b) => b.mins - a.mins);
+  }, [registros]);
 
-  useEffect(() => {
-    if (running) {
-      startRef.current = Date.now();
-      tick();
-      intervalRef.current = setInterval(tick, 1000);
-      const onVis = () => { if (document.visibilityState === "visible") tick(); };
-      document.addEventListener("visibilitychange", onVis);
-      return () => {
-        clearInterval(intervalRef.current);
-        document.removeEventListener("visibilitychange", onVis);
-        if (startRef.current != null) {
-          baseRef.current += Math.floor((Date.now() - startRef.current) / 1000);
-          startRef.current = null;
-          setSecs(baseRef.current);
-        }
-      };
+  // Histórico mensal (accordion) — últimos 6 meses
+  const { data: historico = [] } = useQuery({
+    queryKey: ["tempo-historico", uid],
+    queryFn: async () => {
+      const hoje = new Date();
+      const inicio6 = new Date(hoje.getFullYear(), hoje.getMonth() - 5, 1)
+        .toISOString().slice(0, 10);
+      const { data } = await supabase
+        .from("registros_tempo")
+        .select("*, projetos(titulo, tipos_projeto(nome, cor))")
+        .eq("user_id", uid)
+        .gte("data", inicio6)
+        .order("data", { ascending: false });
+      return data || [];
+    },
+  });
+
+  const historicoPorMes = useMemo(() => {
+    const map = new Map<string, { label: string; total: number; items: any[] }>();
+    for (const r of historico as any[]) {
+      const key = r.data.slice(0, 7);
+      const [y, m] = key.split("-");
+      const label = new Date(+y, +m - 1, 1).toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+      const prev = map.get(key) ?? { label, total: 0, items: [] };
+      prev.total += r.duracao_minutos || 0;
+      prev.items.push(r);
+      map.set(key, prev);
     }
-  }, [running]);
-
-  const resetTimer = () => { baseRef.current = 0; startRef.current = null; setSecs(0); };
-
-  const mref = monthRef();
-  const monday = getMonday(new Date());
-
-  const { data: logs = [] } = useQuery({
-    queryKey: ["time_logs", uid],
-    queryFn: async () => {
-      const { data } = await supabase.from("time_logs").select("*").order("date", { ascending: false }).limit(40);
-      return data ?? [];
-    },
-  });
-
-  const { data: weekLogs = [] } = useQuery({
-    queryKey: ["time_week", uid, monday.toISOString().slice(0, 10)],
-    queryFn: async () => {
-      const { data } = await supabase.from("time_logs").select("*")
-        .gte("date", monday.toISOString().slice(0, 10))
-        .lte("date", addDays(monday, 6).toISOString().slice(0, 10));
-      return data ?? [];
-    },
-  });
-
-  const { data: monthLogs = [] } = useQuery({
-    queryKey: ["time_month", uid, mref],
-    queryFn: async () => {
-      const { start, end } = monthRange(mref);
-      const { data } = await supabase.from("time_logs").select("*").gte("date", start).lte("date", end);
-      return data ?? [];
-    },
-  });
+    return Array.from(map.entries()).sort(([a], [b]) => (a < b ? 1 : -1));
+  }, [historico]);
 
   const inv = () => {
-    qc.invalidateQueries({ queryKey: ["time_logs"] });
-    qc.invalidateQueries({ queryKey: ["time_week"] });
-    qc.invalidateQueries({ queryKey: ["time_month"] });
+    qc.invalidateQueries({ queryKey: ["tempo-registros"] });
+    qc.invalidateQueries({ queryKey: ["tempo-historico"] });
+    qc.invalidateQueries({ queryKey: ["registros-tempo-consolidado"] });
   };
 
-  const fmt = (n: number) => String(n).padStart(2, "0");
-  const display = `${fmt(Math.floor(secs / 3600))}:${fmt(Math.floor((secs % 3600) / 60))}:${fmt(secs % 60)}`;
-
-  const saveTimer = async () => {
-    if (!tActivity.trim()) { toast.error("Adicione uma atividade"); return; }
-    await supabase.from("time_logs").insert({
-      user_id: uid, activity: tActivity, category: tCategory,
-      date: todayISO(), minutes: Math.max(1, Math.ceil(secs / 60)),
-    });
-    toast.success("Tempo registrado");
-    resetTimer(); setRunning(false); setSaving(false); setTActivity("");
+  const remove = async (id: string) => {
+    if (!confirm("Excluir este registro?")) return;
+    const { error } = await supabase.from("registros_tempo").delete().eq("id", id);
+    if (error) { toast.error("Erro ao excluir"); return; }
+    toast.success("Removido");
     inv();
   };
 
-  const days = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
-  const weekTotals = days.map((_, i) => {
-    const iso = addDays(monday, i).toISOString().slice(0, 10);
-    return weekLogs.filter((l: any) => l.date === iso).reduce((a: number, b: any) => a + b.minutes, 0);
-  });
-  const todayIdx = (new Date().getDay() + 6) % 7;
-  const maxW = Math.max(...weekTotals, 1);
-
-  const monthByCat = TIME_CATEGORIES.map((c) => ({
-    ...c,
-    mins: monthLogs.filter((l: any) => l.category === c.key).reduce((a: number, b: any) => a + b.minutes, 0),
-  })).filter((c) => c.mins > 0);
-  const monthTotal = monthByCat.reduce((a, b) => a + b.mins, 0);
-
-  const remove = async (id: string) => { await supabase.from("time_logs").delete().eq("id", id); inv(); };
-
   return (
     <div>
-      <PageHeader title="Registro de Tempo">
-        <Btn onClick={() => { setEditing(null); setOpen(true); }}>+ Registrar</Btn>
-      </PageHeader>
+      <PageHeader title="Registro de Tempo" subtitle="Visualização de todo o tempo registrado nos projetos. Novos registros são criados no botão “+ registrar horas” dentro de cada projeto." />
+
+      <div className="flex flex-wrap gap-2 mb-4 items-center">
+        <span className="label-mono mr-1">Período:</span>
+        <Chip active={periodo === "7"} onClick={() => setPeriodo("7")}>Últimos 7 dias</Chip>
+        <Chip active={periodo === "14"} onClick={() => setPeriodo("14")}>Últimos 14 dias</Chip>
+        <Chip active={periodo === "30"} onClick={() => setPeriodo("30")}>Últimos 30 dias</Chip>
+        <Chip active={periodo === "semana"} onClick={() => setPeriodo("semana")}>Esta semana (seg–dom)</Chip>
+      </div>
 
       <div className="grid lg:grid-cols-2 gap-4 mb-6">
-        <div className="bg-bg-primary border border-border rounded-xl p-6 text-center">
-          <div className="label-mono mb-3">Cronômetro</div>
-          <div className="font-display text-6xl text-terracota tabular-nums mb-5">{display}</div>
-          <div className="flex justify-center gap-2">
-            {!running && !saving && <Btn onClick={() => setRunning(true)}><Play size={14} className="inline mr-1" />Iniciar</Btn>}
-            {running && (
-              <>
-                <Btn variant="ghost" onClick={() => setRunning(false)}><Pause size={14} className="inline mr-1" />Pausar</Btn>
-                <Btn variant="dark" onClick={() => { setRunning(false); setSaving(true); }}><Square size={14} className="inline mr-1" />Salvar</Btn>
-              </>
-            )}
-            {!running && saving && <Btn variant="ghost" onClick={() => { resetTimer(); setSaving(false); }}>Cancelar</Btn>}
+        <div className="bg-bg-primary border border-border rounded-xl p-5">
+          <div className="flex justify-between items-center mb-3">
+            <div className="label-mono">Distribuição por tipo</div>
+            <div className="font-mono text-sm text-text-secondary">Total: {fmtHoras(totalMin / 60)}</div>
           </div>
-          {saving && (
-            <div className="mt-4 space-y-2 text-left">
-              <Field label="Atividade *"><input className={inputCls} value={tActivity} onChange={(e) => setTActivity(e.target.value)} autoFocus /></Field>
-              <Field label="Categoria">
-                <select className={inputCls} value={tCategory} onChange={(e) => setTCategory(e.target.value)}>
-                  {TIME_CATEGORIES.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
-                </select>
-              </Field>
-              <Btn onClick={saveTimer}>Salvar registro</Btn>
+          {porTipo.length === 0 ? (
+            <EmptyState icon="🥧" text="Sem dados no período" />
+          ) : (
+            <div className="grid md:grid-cols-[180px_1fr] gap-4 items-center">
+              <div className="h-[180px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={porTipo}
+                      dataKey="mins"
+                      nameKey="nome"
+                      innerRadius={40}
+                      outerRadius={70}
+                      stroke="none"
+                    >
+                      {porTipo.map((p, i) => <Cell key={i} fill={p.cor} />)}
+                    </Pie>
+                    <Tooltip
+                      formatter={(v: any, _n: any, e: any) => [fmtHoras((v as number) / 60), e.payload.nome]}
+                      contentStyle={{ background: "var(--bg-primary)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 12 }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <ul className="space-y-1.5 text-sm">
+                {porTipo.map((p) => {
+                  const perc = totalMin > 0 ? Math.round((p.mins / totalMin) * 100) : 0;
+                  return (
+                    <li key={p.nome} className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: p.cor }} />
+                      <span className="flex-1 truncate">{p.nome}</span>
+                      <span className="font-mono text-xs text-text-tertiary">{fmtHoras(p.mins / 60)} · {perc}%</span>
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
           )}
         </div>
 
         <div className="bg-bg-primary border border-border rounded-xl p-5">
-          <div className="label-mono mb-3">Esta semana</div>
-          <div className="flex items-end gap-2 h-32 mb-4">
-            {weekTotals.map((m, i) => (
-              <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                <div className="text-[10px] font-mono text-text-tertiary">{m > 0 ? `${Math.round((m / 60) * 10) / 10}h` : ""}</div>
-                <div className="w-full rounded-t transition-all" style={{
-                  height: `${(m / maxW) * 100}%`,
-                  background: i === todayIdx ? "var(--terracota)" : "var(--sage)",
-                  minHeight: m > 0 ? 4 : 0,
-                }} />
-                <div className="text-[10px] font-mono" style={{ color: i === todayIdx ? "var(--terracota)" : "var(--text-tertiary)" }}>{days[i]}</div>
-              </div>
-            ))}
+          <div className="flex justify-between items-center mb-3">
+            <div className="label-mono">{fmtDateBR(inicio)} → {fmtDateBR(fim)}</div>
+            <div className="font-mono text-xs text-text-tertiary">{registros.length} registros</div>
           </div>
+          {registros.length === 0 ? <EmptyState icon="⏱" text="Nenhum registro no período" /> : (
+            <ul className="divide-y divide-border max-h-[280px] overflow-y-auto">
+              {registros.map((r: any) => (
+                <RegistroRow key={r.id} r={r} onSaved={inv} onDelete={() => remove(r.id)} />
+              ))}
+            </ul>
+          )}
         </div>
-      </div>
-
-      <div className="bg-bg-primary border border-border rounded-xl p-5 mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <div className="label-mono">Distribuição do mês</div>
-          <div className="font-mono text-sm text-text-secondary">{fmtMins(monthTotal)}</div>
-        </div>
-        {monthByCat.length > 0 ? (
-          <div className="space-y-3">
-            {monthByCat.map((c) => {
-              const perc = monthTotal > 0 ? Math.round((c.mins / monthTotal) * 100) : 0;
-              return (
-                <div key={c.key}>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full" style={{ background: c.color }} />{c.label}</span>
-                    <span className="font-mono text-text-secondary">{fmtMins(c.mins)} · {perc}%</span>
-                  </div>
-                  <div className="h-1.5 bg-bg-tertiary rounded-full overflow-hidden">
-                    <div className="h-full rounded-full transition-all" style={{ width: `${perc}%`, background: c.color }} />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        ) : <div className="text-xs text-text-tertiary text-center py-8">Registre tempo para ver a distribuição.</div>}
       </div>
 
       <div className="bg-bg-primary border border-border rounded-xl p-5">
-        <div className="label-mono mb-3">Registros recentes</div>
-        {logs.length === 0 ? <EmptyState icon="⏱" text="Nenhum registro" /> : (
+        <div className="label-mono mb-3">Histórico</div>
+        {historicoPorMes.length === 0 ? (
+          <EmptyState icon="📅" text="Sem histórico ainda" />
+        ) : (
           <ul className="divide-y divide-border">
-            {logs.map((l: any) => {
-              const cat = TIME_CATEGORIES.find((c) => c.key === l.category);
-              return (
-                <li key={l.id} className="flex items-center gap-3 py-2 text-sm">
-                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: cat?.color }} />
-                  <span className="font-mono text-xs text-text-tertiary w-20">{new Date(l.date + "T12:00").toLocaleDateString("pt-BR")}</span>
-                  <span className="flex-1 truncate">{l.activity}</span>
-                  <Tag color="neutral">{cat?.label}</Tag>
-                  <span className="font-mono text-xs w-16 text-right">{fmtMins(l.minutes)}</span>
-                  <button onClick={() => { setEditing(l); setOpen(true); }} className="text-text-tertiary hover:text-terracota"><Pencil size={14} /></button>
-                  <button onClick={() => remove(l.id)} className="text-text-tertiary hover:text-[#e05c5c]"><X size={14} /></button>
-                </li>
-              );
-            })}
+            {historicoPorMes.map(([key, mes]) => (
+              <MesAccordion key={key} label={mes.label} total={mes.total} items={mes.items} onChanged={inv} onDelete={remove} />
+            ))}
           </ul>
         )}
       </div>
-
-      {open && <LogModal uid={uid} editing={editing} onClose={() => setOpen(false)} onSaved={inv} />}
     </div>
   );
 }
 
-function LogModal({ uid, editing, onClose, onSaved }: any) {
-  const e = editing ?? {};
-  const [activity, setActivity] = useState(e.activity ?? "");
-  const [category, setCategory] = useState(e.category ?? "conteudo");
-  const [date, setDate] = useState(e.date ?? todayISO());
-  const [hours, setHours] = useState(e.minutes ? Math.floor(e.minutes / 60) : 0);
-  const [minutes, setMinutes] = useState(e.minutes ? e.minutes % 60 : 0);
-  const [notes, setNotes] = useState(e.notes ?? "");
+function MesAccordion({ label, total, items, onChanged, onDelete }: any) {
+  const [open, setOpen] = useState(false);
+  return (
+    <li className="py-2">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between text-left hover:text-terracota transition"
+      >
+        <span className="font-display text-lg capitalize">{open ? "▾" : "▸"} {label}</span>
+        <span className="font-mono text-sm text-text-secondary">{fmtHoras(total / 60)} · {items.length} registros</span>
+      </button>
+      {open && (
+        <ul className="divide-y divide-border mt-2">
+          {items.map((r: any) => (
+            <RegistroRow key={r.id} r={r} onSaved={onChanged} onDelete={() => onDelete(r.id)} />
+          ))}
+        </ul>
+      )}
+    </li>
+  );
+}
+
+function RegistroRow({ r, onSaved, onDelete }: any) {
+  const [editing, setEditing] = useState(false);
+  const [data, setData] = useState<string>(r.data);
+  const [horas, setHoras] = useState<number>(Math.floor((r.duracao_minutos || 0) / 60));
+  const [mins, setMins] = useState<number>((r.duracao_minutos || 0) % 60);
+  const [obs, setObs] = useState<string>(r.observacao ?? "");
+
+  const cor = r.projetos?.tipos_projeto?.cor || "#999";
 
   const save = async () => {
-    if (!activity.trim()) { toast.error("Informe a atividade"); return; }
-    const total = hours * 60 + minutes;
-    if (total <= 0) { toast.error("Tempo inválido"); return; }
-    const payload = { activity, category, date, minutes: total, notes };
-    if (editing?.id) await supabase.from("time_logs").update(payload).eq("id", editing.id);
-    else await supabase.from("time_logs").insert({ ...payload, user_id: uid });
-    toast.success("Salvo"); onSaved(); onClose();
+    const total = Math.max(1, horas * 60 + mins);
+    const { error } = await supabase.from("registros_tempo")
+      .update({ data, duracao_minutos: total, observacao: obs || null })
+      .eq("id", r.id);
+    if (error) { toast.error("Erro ao salvar"); return; }
+    toast.success("Atualizado");
+    setEditing(false);
+    onSaved?.();
   };
 
+  if (editing) {
+    return (
+      <li className="py-2 flex flex-wrap items-center gap-2 text-sm">
+        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: cor }} />
+        <input type="date" className={inputCls + " !w-36"} value={data} onChange={(e) => setData(e.target.value)} />
+        <input type="number" min={0} className={inputCls + " !w-16"} value={horas} onChange={(e) => setHoras(+e.target.value || 0)} />
+        <span className="text-xs text-text-tertiary">h</span>
+        <input type="number" min={0} max={59} className={inputCls + " !w-16"} value={mins} onChange={(e) => setMins(+e.target.value || 0)} />
+        <span className="text-xs text-text-tertiary">min</span>
+        <input className={inputCls + " flex-1 min-w-[140px]"} placeholder="Observação" value={obs} onChange={(e) => setObs(e.target.value)} />
+        <Btn onClick={save}><Check size={14} /></Btn>
+        <button onClick={() => setEditing(false)} className="text-text-tertiary hover:text-text-primary"><X size={14} /></button>
+      </li>
+    );
+  }
+
   return (
-    <Modal open onClose={onClose} title={editing ? "Editar tempo" : "Registrar tempo"} wide>
-      <Field label="Atividade *"><input className={inputCls} value={activity} onChange={(e) => setActivity(e.target.value)} autoFocus /></Field>
-      <div className="grid md:grid-cols-2 gap-x-4">
-        <Field label="Categoria">
-          <select className={inputCls} value={category} onChange={(e) => setCategory(e.target.value)}>
-            {TIME_CATEGORIES.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
-          </select>
-        </Field>
-        <Field label="Data"><input type="date" className={inputCls} value={date} onChange={(e) => setDate(e.target.value)} /></Field>
-        <Field label="Horas"><input type="number" min={0} max={24} className={inputCls} value={hours} onChange={(e) => setHours(+e.target.value)} /></Field>
-        <Field label="Minutos"><input type="number" min={0} max={59} className={inputCls} value={minutes} onChange={(e) => setMinutes(+e.target.value)} /></Field>
-      </div>
-      <Field label="Notas"><textarea className={inputCls} rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} /></Field>
-      <div className="flex gap-2 justify-end mt-4"><Btn variant="ghost" onClick={onClose}>Cancelar</Btn><Btn onClick={save}>Salvar</Btn></div>
-    </Modal>
+    <li className="flex items-center gap-3 py-2 text-sm">
+      <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: cor }} />
+      <span className="font-mono text-xs text-text-tertiary w-20">{fmtDateBR(r.data)}</span>
+      <span className="flex-1 truncate">
+        <span className="text-text-primary">{r.projetos?.titulo || "—"}</span>
+        <span className="text-text-tertiary"> · {r.projetos?.tipos_projeto?.nome || "—"}</span>
+        {r.observacao && <span className="text-text-tertiary"> — {r.observacao}</span>}
+      </span>
+      <span className="font-mono text-[10px] text-text-tertiary">{r.origem}</span>
+      <span className="font-mono text-xs w-16 text-right">{fmtHoras((r.duracao_minutos || 0) / 60)}</span>
+      <button onClick={() => setEditing(true)} className="text-text-tertiary hover:text-terracota"><Pencil size={14} /></button>
+      <button onClick={onDelete} className="text-text-tertiary hover:text-[#e05c5c]"><X size={14} /></button>
+    </li>
   );
 }

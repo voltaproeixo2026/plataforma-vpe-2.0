@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS public.tasks CASCADE;
+DROP TABLE IF EXISTS public.objectives CASCADE;
+DROP TABLE IF EXISTS public.intentions CASCADE;

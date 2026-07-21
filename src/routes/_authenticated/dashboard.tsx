@@ -5,7 +5,7 @@ import { Pencil, Check, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { PageHeader, MetricCard, ProgressBar, SectionTitle } from "@/components/ui-custom";
-import { greeting, fmtDateLong, todayISO, monthRef, getMonday, addDays, fmtBRL } from "@/lib/biz";
+import { greeting, fmtDateLong, todayISO, monthRef, monthRange, getMonday, addDays, fmtBRL } from "@/lib/biz";
 import { CycleWelcomeCard } from "@/components/CycleWelcomeCard";
 import { toast } from "sonner";
 
@@ -57,15 +57,15 @@ function HomePage() {
   const { data } = useQuery({
     queryKey: ["home", uid],
     queryFn: async () => {
-      const [contacts, hot, ssToday, ssWeek, fatMonth, fatMeta, ssCfg, tasks, projTarefas, events] = await Promise.all([
+      const { start: fatStart, end: fatEnd } = monthRange(mref);
+      const [contacts, hot, ssToday, ssWeek, fatMonth, fatMeta, ssCfg, projTarefas, events] = await Promise.all([
         supabase.from("contacts").select("id", { count: "exact", head: true }),
         supabase.from("contacts").select("id", { count: "exact", head: true }).eq("temperatura", "quente"),
         supabase.from("ss_counts").select("abordagem").eq("date", today).maybeSingle(),
         supabase.from("ss_counts").select("abordagem").gte("date", monday.toISOString().slice(0, 10)).lte("date", sunday.toISOString().slice(0, 10)),
-        supabase.from("fat_entries").select("value").like("date", `${mref}%`),
+        supabase.from("fat_entries").select("value").gte("date", fatStart).lte("date", fatEnd),
         supabase.from("fat_meta").select("value").eq("month_ref", mref).maybeSingle(),
         supabase.from("ss_config").select("*").maybeSingle(),
-        supabase.from("tasks").select("*").eq("date", today).eq("done", false).order("priority"),
         supabase.from("tarefas_projeto")
           .select("id,titulo,status,data,projeto_id,projetos(titulo)")
           .eq("user_id", uid)
@@ -82,7 +82,6 @@ function HomePage() {
         fatMonth: (fatMonth.data ?? []).reduce((a, b) => a + Number(b.value), 0),
         fatMeta: Number(fatMeta.data?.value ?? 0),
         ssCfg: ssCfg.data ?? { meta_day: 10 },
-        tasks: tasks.data ?? [],
         projTarefas: projTarefas.data ?? [],
         events: events.data ?? [],
       };
@@ -90,9 +89,8 @@ function HomePage() {
   });
 
   const d = data;
-  const pOrder: Record<string, number> = { alta: 0, media: 1, baixa: 2 };
-  const sortedTasks = (d?.tasks ?? []).slice().sort((a: any, b: any) => pOrder[a.priority] - pOrder[b.priority]).slice(0, 5);
   const projTarefas = (d?.projTarefas ?? []).slice(0, 5);
+
 
   return (
     <div>
@@ -154,7 +152,7 @@ function HomePage() {
         {[
           { to: "/crm", label: "Novo contato", emoji: "👤" },
           { to: "/faturamento", label: "Registrar venda", emoji: "💰" },
-          { to: "/tarefas", label: "Nova tarefa", emoji: "✅" },
+          { to: "/atividades", label: "Nova atividade", emoji: "✅" },
           { to: "/tempo", label: "Registrar tempo", emoji: "⏱" },
         ].map((q) => (
           <Link key={q.to} to={q.to} className="bg-bg-primary border border-border rounded-xl p-4 hover:border-terracota transition flex items-center gap-3">
@@ -167,16 +165,10 @@ function HomePage() {
       <div className="grid md:grid-cols-2 gap-4">
         <div className="bg-bg-primary border border-border rounded-xl p-5">
           <SectionTitle>Tarefas de hoje</SectionTitle>
-          {sortedTasks.length === 0 && projTarefas.length === 0 ? (
+          {projTarefas.length === 0 ? (
             <div className="text-text-tertiary text-sm">Nenhuma tarefa pendente 🎉</div>
           ) : (
             <ul className="space-y-2">
-              {sortedTasks.map((t: any) => (
-                <li key={`t-${t.id}`} className="flex items-center gap-3 py-1 text-sm">
-                  <span className={`w-2 h-2 rounded-full ${t.priority === "alta" ? "bg-[#e05c5c]" : t.priority === "media" ? "bg-gold" : "bg-sage"}`} />
-                  {t.text}
-                </li>
-              ))}
               {projTarefas.map((t: any) => {
                 const proj = Array.isArray(t.projetos) ? t.projetos[0] : t.projetos;
                 return (
@@ -189,7 +181,8 @@ function HomePage() {
               })}
             </ul>
           )}
-          <Link to="/tarefas" className="text-xs text-terracota font-mono mt-3 inline-block">Ver todas →</Link>
+          <Link to="/atividades" className="text-xs text-terracota font-mono mt-3 inline-block">Ver todas →</Link>
+
         </div>
         <div className="bg-bg-primary border border-border rounded-xl p-5">
           <SectionTitle>Próximos eventos</SectionTitle>

@@ -15,12 +15,9 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedTempoRouteImport } from './routes/_authenticated/tempo'
-import { Route as AuthenticatedTarefasRouteImport } from './routes/_authenticated/tarefas'
 import { Route as AuthenticatedSocialSellingRouteImport } from './routes/_authenticated/social-selling'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
-import { Route as AuthenticatedObjetivosRouteImport } from './routes/_authenticated/objetivos'
 import { Route as AuthenticatedFunisRouteImport } from './routes/_authenticated/funis'
-import { Route as AuthenticatedFollowUpRouteImport } from './routes/_authenticated/follow-up'
 import { Route as AuthenticatedFaturamentoRouteImport } from './routes/_authenticated/faturamento'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated/crm'
@@ -65,11 +62,6 @@ const AuthenticatedTempoRoute = AuthenticatedTempoRouteImport.update({
   path: '/tempo',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedTarefasRoute = AuthenticatedTarefasRouteImport.update({
-  id: '/tarefas',
-  path: '/tarefas',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedSocialSellingRoute =
   AuthenticatedSocialSellingRouteImport.update({
     id: '/social-selling',
@@ -81,19 +73,9 @@ const AuthenticatedPerfilRoute = AuthenticatedPerfilRouteImport.update({
   path: '/perfil',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedObjetivosRoute = AuthenticatedObjetivosRouteImport.update({
-  id: '/objetivos',
-  path: '/objetivos',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedFunisRoute = AuthenticatedFunisRouteImport.update({
   id: '/funis',
   path: '/funis',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedFollowUpRoute = AuthenticatedFollowUpRouteImport.update({
-  id: '/follow-up',
-  path: '/follow-up',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedFaturamentoRoute =
@@ -187,12 +169,9 @@ export interface FileRoutesByFullPath {
   '/crm': typeof AuthenticatedCrmRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/faturamento': typeof AuthenticatedFaturamentoRoute
-  '/follow-up': typeof AuthenticatedFollowUpRoute
   '/funis': typeof AuthenticatedFunisRoute
-  '/objetivos': typeof AuthenticatedObjetivosRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/social-selling': typeof AuthenticatedSocialSellingRoute
-  '/tarefas': typeof AuthenticatedTarefasRoute
   '/tempo': typeof AuthenticatedTempoRoute
   '/atividades/agenda': typeof AuthenticatedAtividadesAgendaRoute
   '/atividades/intencoes': typeof AuthenticatedAtividadesIntencoesRoute
@@ -213,12 +192,9 @@ export interface FileRoutesByTo {
   '/crm': typeof AuthenticatedCrmRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/faturamento': typeof AuthenticatedFaturamentoRoute
-  '/follow-up': typeof AuthenticatedFollowUpRoute
   '/funis': typeof AuthenticatedFunisRoute
-  '/objetivos': typeof AuthenticatedObjetivosRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/social-selling': typeof AuthenticatedSocialSellingRoute
-  '/tarefas': typeof AuthenticatedTarefasRoute
   '/tempo': typeof AuthenticatedTempoRoute
   '/atividades/agenda': typeof AuthenticatedAtividadesAgendaRoute
   '/atividades/intencoes': typeof AuthenticatedAtividadesIntencoesRoute
@@ -242,12 +218,9 @@ export interface FileRoutesById {
   '/_authenticated/crm': typeof AuthenticatedCrmRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/faturamento': typeof AuthenticatedFaturamentoRoute
-  '/_authenticated/follow-up': typeof AuthenticatedFollowUpRoute
   '/_authenticated/funis': typeof AuthenticatedFunisRoute
-  '/_authenticated/objetivos': typeof AuthenticatedObjetivosRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
   '/_authenticated/social-selling': typeof AuthenticatedSocialSellingRoute
-  '/_authenticated/tarefas': typeof AuthenticatedTarefasRoute
   '/_authenticated/tempo': typeof AuthenticatedTempoRoute
   '/_authenticated/atividades/agenda': typeof AuthenticatedAtividadesAgendaRoute
   '/_authenticated/atividades/intencoes': typeof AuthenticatedAtividadesIntencoesRoute
@@ -271,12 +244,9 @@ export interface FileRouteTypes {
     | '/crm'
     | '/dashboard'
     | '/faturamento'
-    | '/follow-up'
     | '/funis'
-    | '/objetivos'
     | '/perfil'
     | '/social-selling'
-    | '/tarefas'
     | '/tempo'
     | '/atividades/agenda'
     | '/atividades/intencoes'
@@ -297,12 +267,9 @@ export interface FileRouteTypes {
     | '/crm'
     | '/dashboard'
     | '/faturamento'
-    | '/follow-up'
     | '/funis'
-    | '/objetivos'
     | '/perfil'
     | '/social-selling'
-    | '/tarefas'
     | '/tempo'
     | '/atividades/agenda'
     | '/atividades/intencoes'
@@ -325,12 +292,9 @@ export interface FileRouteTypes {
     | '/_authenticated/crm'
     | '/_authenticated/dashboard'
     | '/_authenticated/faturamento'
-    | '/_authenticated/follow-up'
     | '/_authenticated/funis'
-    | '/_authenticated/objetivos'
     | '/_authenticated/perfil'
     | '/_authenticated/social-selling'
-    | '/_authenticated/tarefas'
     | '/_authenticated/tempo'
     | '/_authenticated/atividades/agenda'
     | '/_authenticated/atividades/intencoes'
@@ -392,13 +356,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTempoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/tarefas': {
-      id: '/_authenticated/tarefas'
-      path: '/tarefas'
-      fullPath: '/tarefas'
-      preLoaderRoute: typeof AuthenticatedTarefasRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/social-selling': {
       id: '/_authenticated/social-selling'
       path: '/social-selling'
@@ -413,25 +370,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPerfilRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/objetivos': {
-      id: '/_authenticated/objetivos'
-      path: '/objetivos'
-      fullPath: '/objetivos'
-      preLoaderRoute: typeof AuthenticatedObjetivosRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/funis': {
       id: '/_authenticated/funis'
       path: '/funis'
       fullPath: '/funis'
       preLoaderRoute: typeof AuthenticatedFunisRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/follow-up': {
-      id: '/_authenticated/follow-up'
-      path: '/follow-up'
-      fullPath: '/follow-up'
-      preLoaderRoute: typeof AuthenticatedFollowUpRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/faturamento': {
@@ -570,12 +513,9 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCrmRoute: typeof AuthenticatedCrmRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedFaturamentoRoute: typeof AuthenticatedFaturamentoRoute
-  AuthenticatedFollowUpRoute: typeof AuthenticatedFollowUpRoute
   AuthenticatedFunisRoute: typeof AuthenticatedFunisRoute
-  AuthenticatedObjetivosRoute: typeof AuthenticatedObjetivosRoute
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
   AuthenticatedSocialSellingRoute: typeof AuthenticatedSocialSellingRoute
-  AuthenticatedTarefasRoute: typeof AuthenticatedTarefasRoute
   AuthenticatedTempoRoute: typeof AuthenticatedTempoRoute
 }
 
@@ -588,12 +528,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCrmRoute: AuthenticatedCrmRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedFaturamentoRoute: AuthenticatedFaturamentoRoute,
-  AuthenticatedFollowUpRoute: AuthenticatedFollowUpRoute,
   AuthenticatedFunisRoute: AuthenticatedFunisRoute,
-  AuthenticatedObjetivosRoute: AuthenticatedObjetivosRoute,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
   AuthenticatedSocialSellingRoute: AuthenticatedSocialSellingRoute,
-  AuthenticatedTarefasRoute: AuthenticatedTarefasRoute,
   AuthenticatedTempoRoute: AuthenticatedTempoRoute,
 }
 
@@ -610,13 +547,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
