@@ -152,7 +152,7 @@ function HomePage() {
         {[
           { to: "/crm", label: "Novo contato", emoji: "👤" },
           { to: "/faturamento", label: "Registrar venda", emoji: "💰" },
-          { to: "/tarefas", label: "Nova tarefa", emoji: "✅" },
+          { to: "/atividades", label: "Nova atividade", emoji: "✅" },
           { to: "/tempo", label: "Registrar tempo", emoji: "⏱" },
         ].map((q) => (
           <Link key={q.to} to={q.to} className="bg-bg-primary border border-border rounded-xl p-4 hover:border-terracota transition flex items-center gap-3">
@@ -165,16 +165,10 @@ function HomePage() {
       <div className="grid md:grid-cols-2 gap-4">
         <div className="bg-bg-primary border border-border rounded-xl p-5">
           <SectionTitle>Tarefas de hoje</SectionTitle>
-          {sortedTasks.length === 0 && projTarefas.length === 0 ? (
+          {projTarefas.length === 0 ? (
             <div className="text-text-tertiary text-sm">Nenhuma tarefa pendente 🎉</div>
           ) : (
             <ul className="space-y-2">
-              {sortedTasks.map((t: any) => (
-                <li key={`t-${t.id}`} className="flex items-center gap-3 py-1 text-sm">
-                  <span className={`w-2 h-2 rounded-full ${t.priority === "alta" ? "bg-[#e05c5c]" : t.priority === "media" ? "bg-gold" : "bg-sage"}`} />
-                  {t.text}
-                </li>
-              ))}
               {projTarefas.map((t: any) => {
                 const proj = Array.isArray(t.projetos) ? t.projetos[0] : t.projetos;
                 return (
@@ -187,7 +181,8 @@ function HomePage() {
               })}
             </ul>
           )}
-          <Link to="/tarefas" className="text-xs text-terracota font-mono mt-3 inline-block">Ver todas →</Link>
+          <Link to="/atividades" className="text-xs text-terracota font-mono mt-3 inline-block">Ver todas →</Link>
+
         </div>
         <div className="bg-bg-primary border border-border rounded-xl p-5">
           <SectionTitle>Próximos eventos</SectionTitle>
