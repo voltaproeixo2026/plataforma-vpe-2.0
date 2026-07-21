@@ -446,63 +446,6 @@ export type Database = {
         }
         Relationships: []
       }
-      intentions: {
-        Row: {
-          created_at: string
-          id: string
-          month_ref: string
-          text: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          month_ref: string
-          text: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          month_ref?: string
-          text?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      objectives: {
-        Row: {
-          category: string
-          created_at: string
-          done: boolean
-          due_date: string | null
-          id: string
-          month_ref: string
-          text: string
-          user_id: string
-        }
-        Insert: {
-          category?: string
-          created_at?: string
-          done?: boolean
-          due_date?: string | null
-          id?: string
-          month_ref: string
-          text: string
-          user_id: string
-        }
-        Update: {
-          category?: string
-          created_at?: string
-          done?: boolean
-          due_date?: string | null
-          id?: string
-          month_ref?: string
-          text?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
           created_at: string
@@ -874,45 +817,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      tasks: {
-        Row: {
-          category: string
-          created_at: string
-          date: string
-          done: boolean
-          execution_status: string | null
-          id: string
-          notes: string | null
-          priority: string
-          text: string
-          user_id: string
-        }
-        Insert: {
-          category?: string
-          created_at?: string
-          date: string
-          done?: boolean
-          execution_status?: string | null
-          id?: string
-          notes?: string | null
-          priority?: string
-          text: string
-          user_id: string
-        }
-        Update: {
-          category?: string
-          created_at?: string
-          date?: string
-          done?: boolean
-          execution_status?: string | null
-          id?: string
-          notes?: string | null
-          priority?: string
-          text?: string
-          user_id?: string
-        }
-        Relationships: []
       }
       time_logs: {
         Row: {
