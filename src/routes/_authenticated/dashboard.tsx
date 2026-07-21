@@ -5,7 +5,7 @@ import { Pencil, Check, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { PageHeader, MetricCard, ProgressBar, SectionTitle } from "@/components/ui-custom";
-import { greeting, fmtDateLong, todayISO, monthRef, getMonday, addDays, fmtBRL } from "@/lib/biz";
+import { greeting, fmtDateLong, todayISO, monthRef, monthRange, getMonday, addDays, fmtBRL } from "@/lib/biz";
 import { CycleWelcomeCard } from "@/components/CycleWelcomeCard";
 import { toast } from "sonner";
 
