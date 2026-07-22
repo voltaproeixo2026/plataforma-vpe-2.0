@@ -231,6 +231,31 @@ export function CicloManager({ userId }: { userId: string }) {
         <div className="flex gap-2 justify-end"><Btn variant="ghost" onClick={() => setShowGerar(false)}>Cancelar</Btn><Btn onClick={gerar}>Confirmar</Btn></div>
       </Modal>
 
+      <Modal open={!!editSemana} onClose={() => setEditSemana(null)} title="Editar semana">
+        <Field label="Nome"><input className={inputCls} value={editNome} onChange={e => setEditNome(e.target.value)} /></Field>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Início"><input type="date" className={inputCls} value={editInicio} onChange={e => setEditInicio(e.target.value)} /></Field>
+          <Field label="Fim"><input type="date" className={inputCls} value={editFim} onChange={e => setEditFim(e.target.value)} /></Field>
+        </div>
+        <label className="flex items-center gap-2 mb-3 text-sm">
+          <input type="checkbox" checked={editDescanso} onChange={e => setEditDescanso(e.target.checked)} /> Semana de descanso
+        </label>
+        <div className="flex gap-2 justify-end">
+          <Btn variant="ghost" onClick={() => setEditSemana(null)}>Cancelar</Btn>
+          <Btn onClick={async () => {
+            if (!editSemana) return;
+            if (!editNome || !editInicio || !editFim) { toast.error("Preencha todos os campos"); return; }
+            const { error } = await supabase.from("semanas").update({
+              nome: editNome, data_inicio: editInicio, data_fim: editFim, descanso: editDescanso,
+            }).eq("id", editSemana.id);
+            if (error) return toast.error(error.message);
+            setEditSemana(null);
+            qc.invalidateQueries({ queryKey: ["semanas"] });
+            toast.success("Semana atualizada");
+          }}>Salvar</Btn>
+        </div>
+      </Modal>
+
       <Modal open={showEncerrar} onClose={() => setShowEncerrar(false)} title="Encerrar ciclo" wide>
         {cicloId && <CicloResumo cicloId={cicloId} />}
         <Field label="Reflexão sobre este ciclo">
