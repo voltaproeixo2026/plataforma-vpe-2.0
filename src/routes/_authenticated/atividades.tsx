@@ -20,9 +20,17 @@ function AtividadesLayout() {
   const { data: cicloAtivo } = useQuery({
     queryKey: ["ciclo_ativo", uid],
     enabled: !!uid,
-    queryFn: async () =>
-      (await supabase.from("ciclos").select("*").eq("status", "ativo").maybeSingle()).data ??
-      (await ensureActiveCiclo(uid!)),
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("ciclos")
+        .select("*")
+        .eq("user_id", uid!)
+        .eq("status", "ativo")
+        .order("created_at", { ascending: true })
+        .limit(1);
+      if (data && data.length > 0) return data[0];
+      return await ensureActiveCiclo(uid!);
+    },
   });
   const { data: semanasCiclo = [] } = useQuery({
     queryKey: ["semanas_ciclo", cicloAtivo?.id],
@@ -35,8 +43,8 @@ function AtividadesLayout() {
   const posicao = semanaAtual?.ordem_no_ciclo ?? semanasCiclo.length;
   const pct = Math.min(100, (posicao / CICLO_TAMANHO) * 100);
 
-  const tabs = [
-  { to: "/atividades", label: "Projetos" },
+  const tabs: { to: string; label: string; exact?: boolean }[] = [
+  { to: "/atividades", label: "Projetos", exact: true },
   { to: "/atividades/semanas", label: "Gerenciar ciclo" },
   { to: "/atividades/agenda", label: "Agenda" },
   { to: "/atividades/intencoes", label: "Intenções" },
