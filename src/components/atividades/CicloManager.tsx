@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Btn, Field, inputCls, Modal, EmptyState, ProgressBar } from "@/components/ui-custom";
-import { fmtDateBR, addDays, todayISO } from "@/lib/atividades";
+import { fmtDateBR, addDays, todayISO, ensureActiveCiclo } from "@/lib/atividades";
 import { toast } from "sonner";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
@@ -27,6 +27,11 @@ export function CicloManager({ userId }: { userId: string }) {
       return data;
     },
   });
+  useEffect(() => {
+    ensureActiveCiclo(userId).then(() => {
+      qc.invalidateQueries({ queryKey: ["ciclo-ativo", userId] });
+    });
+  }, [userId]);
 
   const cicloId = ciclo?.id;
 
