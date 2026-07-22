@@ -178,7 +178,12 @@ export function CicloManager({ userId }: { userId: string }) {
                       const { error } = await supabase.from("semanas").delete().eq("id", s.id);
                       if (error) return toast.error(error.message);
                       // Reordenar as semanas restantes
-                      const { data: restantes } = await supabase.from("semanas").select("id").eq("ciclo_id", cicloId).order("data_inicio");
+                      if (cicloId) {
+                        const { data: restantes } = await supabase.from("semanas").select("id").eq("ciclo_id", cicloId).order("data_inicio");
+                        if (restantes) {
+                          await Promise.all(restantes.map((r, i) => supabase.from("semanas").update({ ordem_no_ciclo: i + 1 }).eq("id", r.id)));
+                        }
+                      }
                       if (restantes) {
                         await Promise.all(restantes.map((r, i) => supabase.from("semanas").update({ ordem_no_ciclo: i + 1 }).eq("id", r.id)));
                       }
