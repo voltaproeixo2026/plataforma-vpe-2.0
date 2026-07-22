@@ -184,9 +184,6 @@ export function CicloManager({ userId }: { userId: string }) {
                           await Promise.all(restantes.map((r, i) => supabase.from("semanas").update({ ordem_no_ciclo: i + 1 }).eq("id", r.id)));
                         }
                       }
-                      if (restantes) {
-                        await Promise.all(restantes.map((r, i) => supabase.from("semanas").update({ ordem_no_ciclo: i + 1 }).eq("id", r.id)));
-                      }
                       qc.invalidateQueries({ queryKey: ["semanas"] });
                       toast.success("Semana excluída");
                     }}
