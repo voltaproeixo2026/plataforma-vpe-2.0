@@ -100,12 +100,27 @@ export async function ensureDefaultTipos(userId: string) {
 }
 
 export async function ensureActiveCiclo(userId: string) {
-  const { data } = await supabase.from("ciclos").select("*").eq("status", "ativo").maybeSingle();
-  if (data) return data;
-  const today = new Date().toISOString().slice(0, 10);
-  const { data: novo } = await supabase.from("ciclos")
+  // Filter by user_id AND status; use limit(1) to be robust against any legacy duplicates.
+  const { data: existing, error } = await supabase
+    .from("ciclos")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("status", "ativo")
+    .order("created_at", { ascending: true })
+    .limit(1);
+  if (error) {
+    console.error("[ensureActiveCiclo] select error", error);
+    return null;
+  }
+  if (existing && existing.length > 0) return existing[0];
+  const today = todayISO();
+  const { data: novo, error: insErr } = await supabase.from("ciclos")
     .insert({ user_id: userId, nome: "Ciclo 1", data_inicio: today, status: "ativo" })
     .select().single();
+  if (insErr) {
+    console.error("[ensureActiveCiclo] insert error", insErr);
+    return null;
+  }
   return novo;
 }
 

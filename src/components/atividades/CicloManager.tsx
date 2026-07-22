@@ -23,13 +23,20 @@ export function CicloManager({ userId }: { userId: string }) {
   const { data: ciclo } = useQuery({
     queryKey: ["ciclo-ativo", userId],
     queryFn: async () => {
-      const { data } = await supabase.from("ciclos").select("*").eq("user_id", userId).eq("status", "ativo").maybeSingle();
-      return data;
+      const { data, error } = await supabase
+        .from("ciclos")
+        .select("*")
+        .eq("user_id", userId)
+        .eq("status", "ativo")
+        .order("created_at", { ascending: true })
+        .limit(1);
+      if (error) { console.error("[ciclo-ativo]", error); return null; }
+      return data?.[0] ?? null;
     },
   });
   useEffect(() => {
-    ensureActiveCiclo(userId).then(() => {
-      qc.invalidateQueries({ queryKey: ["ciclo-ativo", userId] });
+    ensureActiveCiclo(userId).then((c) => {
+      if (c) qc.invalidateQueries({ queryKey: ["ciclo-ativo", userId] });
     });
   }, [userId]);
 
