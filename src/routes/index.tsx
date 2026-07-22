@@ -3,10 +3,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Volta Pro Eixo — Um espaço para empreendedoras" },
-      { name: "description", content: "Um lugar só seu pra organizar o que sua cabeça já sabe." },
-      { property: "og:title", content: "Volta Pro Eixo" },
-      { property: "og:description", content: "Um lugar só seu pra organizar o que sua cabeça já sabe." },
+      { title: "Sistema Volta Pro Eixo" },
+      { name: "description", content: "Um espaço para empreendedoras que pensam demais e fazem de menos.\n\nUm lugar só seu pra organizar o que sua cabeça já sabe." },
+      { property: "og:title", content: "Sistema Volta Pro Eixo" },
+      { property: "og:description", content: "Um espaço para empreendedoras que pensam demais e fazem de menos.\n\nUm lugar só seu pra organizar o que sua cabeça já sabe." },
     ],
   }),
   component: Landing,
