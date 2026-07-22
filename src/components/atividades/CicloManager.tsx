@@ -19,6 +19,11 @@ export function CicloManager({ userId }: { userId: string }) {
   const [novoFim, setNovoFim] = useState("");
   const [descanso, setDescanso] = useState(false);
   const [historicoOpen, setHistoricoOpen] = useState<string | null>(null);
+  const [editSemana, setEditSemana] = useState<any | null>(null);
+  const [editNome, setEditNome] = useState("");
+  const [editInicio, setEditInicio] = useState("");
+  const [editFim, setEditFim] = useState("");
+  const [editDescanso, setEditDescanso] = useState(false);
 
   const { data: ciclo } = useQuery({
     queryKey: ["ciclo-ativo", userId],
