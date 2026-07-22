@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Btn, Field, inputCls, Modal, EmptyState, ProgressBar } from "@/components/ui-custom";
 import { fmtDateBR, addDays, todayISO, ensureActiveCiclo } from "@/lib/atividades";
 import { toast } from "sonner";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Pencil, Trash2 } from "lucide-react";
 
 const CICLO_SIZE = 12;
 
