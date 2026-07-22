@@ -147,17 +147,50 @@ export function CicloManager({ userId }: { userId: string }) {
         {semanas.length === 0 ? <EmptyState icon="📅" text="Nenhuma semana. Gere a primeira." /> : (
           <ul className="space-y-2">
             {semanas.map(s => (
-              <li key={s.id} className="flex items-center justify-between p-3 border border-border rounded-lg">
-                <div>
-                  <div className="font-medium text-text-primary">{s.nome} {s.descanso && <span className="text-xs font-mono text-sage ml-2">descanso</span>}</div>
+              <li key={s.id} className="flex items-center justify-between p-3 border border-border rounded-lg gap-3">
+                <div className="min-w-0">
+                  <div className="font-medium text-text-primary truncate">{s.nome} {s.descanso && <span className="text-xs font-mono text-sage ml-2">descanso</span>}</div>
                   <div className="text-xs font-mono text-text-tertiary">{fmtDateBR(s.data_inicio)} → {fmtDateBR(s.data_fim)}</div>
                 </div>
-                <button onClick={async () => {
-                  await supabase.from("semanas").update({ descanso: !s.descanso }).eq("id", s.id);
-                  qc.invalidateQueries({ queryKey: ["semanas"] });
-                }} className="text-xs font-mono text-text-tertiary hover:text-text-primary">
-                  {s.descanso ? "Marcar como normal" : "Marcar como descanso"}
-                </button>
+                <div className="flex items-center gap-3 shrink-0">
+                  <button onClick={async () => {
+                    await supabase.from("semanas").update({ descanso: !s.descanso }).eq("id", s.id);
+                    qc.invalidateQueries({ queryKey: ["semanas"] });
+                  }} className="text-xs font-mono text-text-tertiary hover:text-text-primary">
+                    {s.descanso ? "Marcar como normal" : "Marcar como descanso"}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setEditSemana(s);
+                      setEditNome(s.nome);
+                      setEditInicio(s.data_inicio);
+                      setEditFim(s.data_fim);
+                      setEditDescanso(!!s.descanso);
+                    }}
+                    className="text-text-tertiary hover:text-text-primary"
+                    title="Editar"
+                  >
+                    <Pencil size={16} />
+                  </button>
+                  <button
+                    onClick={async () => {
+                      if (!confirm(`Excluir "${s.nome}"? Registros de tempo vinculados perderão o vínculo com a semana.`)) return;
+                      const { error } = await supabase.from("semanas").delete().eq("id", s.id);
+                      if (error) return toast.error(error.message);
+                      // Reordenar as semanas restantes
+                      const { data: restantes } = await supabase.from("semanas").select("id").eq("ciclo_id", cicloId).order("data_inicio");
+                      if (restantes) {
+                        await Promise.all(restantes.map((r, i) => supabase.from("semanas").update({ ordem_no_ciclo: i + 1 }).eq("id", r.id)));
+                      }
+                      qc.invalidateQueries({ queryKey: ["semanas"] });
+                      toast.success("Semana excluída");
+                    }}
+                    className="text-text-tertiary hover:text-red-500"
+                    title="Excluir"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
