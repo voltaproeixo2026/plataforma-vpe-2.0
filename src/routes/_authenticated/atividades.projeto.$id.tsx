@@ -165,6 +165,39 @@ function ProjetoDetail() {
       </div>
 
       <div className="bg-bg-primary border border-border rounded-xl p-5 mb-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+          <div>
+            <div className="label-mono">Trajetória do projeto</div>
+            <div className="text-xs text-text-tertiary font-mono mt-1">
+              {historicoSemanas.length === 0
+                ? p.semanas?.nome
+                  ? <>Passou por: <span className="text-text-secondary">{p.semanas.nome}</span> (semana atual)</>
+                  : "Sem semana vinculada"
+                : <>Passou por: {historicoSemanas.map((h: any) => h.semanas?.nome ?? "—").join(" → ")}{p.semanas?.nome ? ` → ${p.semanas.nome} (atual)` : ""} · <span className="text-terracota">empurrado {historicoSemanas.length}×</span></>}
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-mono text-text-tertiary">Mover para:</span>
+            <select
+              className={inputCls + " !w-auto"}
+              value=""
+              onChange={(e) => moverParaSemana(e.target.value)}
+            >
+              <option value="">— semana —</option>
+              {semanasList.filter((s: any) => s.id !== p.semana_id).map((s: any) => (
+                <option key={s.id} value={s.id}>{s.nome}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+        {p.projetos_recorrentes?.id && (
+          <div className="text-xs font-mono text-terracota flex items-center gap-1 mt-1">
+            <Repeat size={12} /> instância de: {p.projetos_recorrentes.titulo}
+          </div>
+        )}
+      </div>
+
+      <div className="bg-bg-primary border border-border rounded-xl p-5 mb-6">
         <div className="flex items-center justify-between mb-3">
           <div className="label-mono">Tarefas</div>
           <button onClick={copiarRecorrentes} className="text-xs font-mono text-text-tertiary hover:text-terracota flex items-center gap-1">
