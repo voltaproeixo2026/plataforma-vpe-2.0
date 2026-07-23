@@ -28,7 +28,7 @@ function ProjetoDetail() {
 
   const { data: p } = useQuery({
     queryKey: ["projeto", id],
-    queryFn: async () => (await supabase.from("projetos").select("*, tipos_projeto(nome,cor), semanas(nome,data_inicio,data_fim), intencoes(titulo)").eq("id", id).maybeSingle()).data,
+    queryFn: async () => (await supabase.from("projetos").select("*, tipos_projeto(nome,cor), semanas(nome,data_inicio,data_fim), intencoes(titulo), projetos_recorrentes(id,titulo)").eq("id", id).maybeSingle()).data,
   });
   const { data: tarefas = [] } = useQuery({
     queryKey: ["tarefas_projeto", id],
@@ -37,6 +37,14 @@ function ProjetoDetail() {
   const { data: registros = [] } = useQuery({
     queryKey: ["registros_tempo", id],
     queryFn: async () => (await supabase.from("registros_tempo").select("*").eq("projeto_id", id).order("data", { ascending: false })).data ?? [],
+  });
+  const { data: historicoSemanas = [] } = useQuery({
+    queryKey: ["projeto_semana_historico", id],
+    queryFn: async () => (await supabase.from("projeto_semana_historico").select("id, data_transicao, semanas(nome)").eq("projeto_id", id).order("data_transicao", { ascending: true })).data ?? [],
+  });
+  const { data: semanasList = [] } = useQuery({
+    queryKey: ["semanas-all-for-projeto", id],
+    queryFn: async () => (await supabase.from("semanas").select("id, nome, data_inicio, data_fim").order("data_inicio", { ascending: false })).data ?? [],
   });
 
   const inv = () => {
