@@ -453,6 +453,7 @@ export type Database = {
           display_name: string | null
           id: string
           last_cycle_start: string | null
+          semana_fixada_id: string | null
           updated_at: string
         }
         Insert: {
@@ -461,6 +462,7 @@ export type Database = {
           display_name?: string | null
           id: string
           last_cycle_start?: string | null
+          semana_fixada_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -469,9 +471,57 @@ export type Database = {
           display_name?: string | null
           id?: string
           last_cycle_start?: string | null
+          semana_fixada_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_semana_fixada_id_fkey"
+            columns: ["semana_fixada_id"]
+            isOneToOne: false
+            referencedRelation: "semanas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projeto_semana_historico: {
+        Row: {
+          data_transicao: string
+          id: string
+          projeto_id: string
+          semana_id: string | null
+          user_id: string
+        }
+        Insert: {
+          data_transicao?: string
+          id?: string
+          projeto_id: string
+          semana_id?: string | null
+          user_id: string
+        }
+        Update: {
+          data_transicao?: string
+          id?: string
+          projeto_id?: string
+          semana_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projeto_semana_historico_projeto_id_fkey"
+            columns: ["projeto_id"]
+            isOneToOne: false
+            referencedRelation: "projetos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projeto_semana_historico_semana_id_fkey"
+            columns: ["semana_id"]
+            isOneToOne: false
+            referencedRelation: "semanas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       projetos: {
         Row: {
@@ -481,6 +531,7 @@ export type Database = {
           id: string
           intencao_id: string | null
           percentual_conclusao: number
+          projeto_recorrente_id: string | null
           semana_id: string | null
           status: Database["public"]["Enums"]["projeto_status"]
           tipo_id: string
@@ -495,6 +546,7 @@ export type Database = {
           id?: string
           intencao_id?: string | null
           percentual_conclusao?: number
+          projeto_recorrente_id?: string | null
           semana_id?: string | null
           status?: Database["public"]["Enums"]["projeto_status"]
           tipo_id: string
@@ -509,6 +561,7 @@ export type Database = {
           id?: string
           intencao_id?: string | null
           percentual_conclusao?: number
+          projeto_recorrente_id?: string | null
           semana_id?: string | null
           status?: Database["public"]["Enums"]["projeto_status"]
           tipo_id?: string
@@ -525,6 +578,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "projetos_projeto_recorrente_id_fkey"
+            columns: ["projeto_recorrente_id"]
+            isOneToOne: false
+            referencedRelation: "projetos_recorrentes"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "projetos_semana_id_fkey"
             columns: ["semana_id"]
             isOneToOne: false
@@ -533,6 +593,60 @@ export type Database = {
           },
           {
             foreignKeyName: "projetos_tipo_id_fkey"
+            columns: ["tipo_id"]
+            isOneToOne: false
+            referencedRelation: "tipos_projeto"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projetos_recorrentes: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          descricao: string | null
+          frequencia: Database["public"]["Enums"]["recorrencia_frequencia"]
+          id: string
+          intencao_id: string | null
+          tipo_id: string
+          titulo: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          descricao?: string | null
+          frequencia?: Database["public"]["Enums"]["recorrencia_frequencia"]
+          id?: string
+          intencao_id?: string | null
+          tipo_id: string
+          titulo: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          descricao?: string | null
+          frequencia?: Database["public"]["Enums"]["recorrencia_frequencia"]
+          id?: string
+          intencao_id?: string | null
+          tipo_id?: string
+          titulo?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projetos_recorrentes_intencao_id_fkey"
+            columns: ["intencao_id"]
+            isOneToOne: false
+            referencedRelation: "intencoes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projetos_recorrentes_tipo_id_fkey"
             columns: ["tipo_id"]
             isOneToOne: false
             referencedRelation: "tipos_projeto"
@@ -892,6 +1006,7 @@ export type Database = {
     Enums: {
       ciclo_status: "ativo" | "concluido"
       projeto_status: "planejamento" | "ativo" | "concluido" | "cancelado"
+      recorrencia_frequencia: "semanal"
       registro_origem: "manual" | "cronometro"
     }
     CompositeTypes: {
@@ -1022,6 +1137,7 @@ export const Constants = {
     Enums: {
       ciclo_status: ["ativo", "concluido"],
       projeto_status: ["planejamento", "ativo", "concluido", "cancelado"],
+      recorrencia_frequencia: ["semanal"],
       registro_origem: ["manual", "cronometro"],
     },
   },
