@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { PageHeader, EmptyState, Chip, Btn, inputCls } from "@/components/ui-custom";
 import { fmtHoras, fmtDateBR, todayISO, addDays } from "@/lib/atividades";
+import { useSemanaFixada } from "@/hooks/use-semana-fixada";
 import { Pencil, X, Check } from "lucide-react";
 import { toast } from "sonner";
 
@@ -40,7 +41,22 @@ function TempoPage() {
   const qc = useQueryClient();
 
   const [periodo, setPeriodo] = useState<Periodo>("7");
-  const { inicio, fim } = useMemo(() => rangeFor(periodo), [periodo]);
+  const { semanaFixada, setSemanaFixada } = useSemanaFixada();
+
+  const { data: semanas = [] } = useQuery({
+    queryKey: ["semanas-todas-tempo", uid],
+    queryFn: async () => (await supabase.from("semanas").select("id, nome, data_inicio, data_fim").order("data_inicio", { ascending: false })).data ?? [],
+  });
+
+  const semanaSel = useMemo(
+    () => (semanaFixada ? semanas.find((s: any) => s.id === semanaFixada) ?? null : null),
+    [semanaFixada, semanas],
+  );
+
+  const { inicio, fim } = useMemo(() => {
+    if (semanaSel) return { inicio: semanaSel.data_inicio, fim: semanaSel.data_fim };
+    return rangeFor(periodo);
+  }, [periodo, semanaSel]);
 
   const { data: registros = [] } = useQuery({
     queryKey: ["tempo-registros", uid, inicio, fim],
@@ -123,11 +139,23 @@ function TempoPage() {
       <PageHeader title="Registro de Tempo" subtitle="Visualização de todo o tempo registrado nos projetos. Novos registros são criados no botão “+ registrar horas” dentro de cada projeto." />
 
       <div className="flex flex-wrap gap-2 mb-4 items-center">
-        <span className="label-mono mr-1">Período:</span>
-        <Chip active={periodo === "7"} onClick={() => setPeriodo("7")}>Últimos 7 dias</Chip>
-        <Chip active={periodo === "14"} onClick={() => setPeriodo("14")}>Últimos 14 dias</Chip>
-        <Chip active={periodo === "30"} onClick={() => setPeriodo("30")}>Últimos 30 dias</Chip>
-        <Chip active={periodo === "semana"} onClick={() => setPeriodo("semana")}>Esta semana (seg–dom)</Chip>
+        <span className="label-mono mr-1">Semana:</span>
+        <select
+          className={inputCls + " !w-auto"}
+          value={semanaFixada ?? ""}
+          onChange={(e) => setSemanaFixada(e.target.value)}
+          title="Semana fixada (preferência salva no perfil)"
+        >
+          <option value="">Todas / período livre</option>
+          {semanas.map((s: any) => <option key={s.id} value={s.id}>{s.nome}</option>)}
+        </select>
+        {!semanaSel && <>
+          <span className="label-mono ml-2 mr-1">Período:</span>
+          <Chip active={periodo === "7"} onClick={() => setPeriodo("7")}>Últimos 7 dias</Chip>
+          <Chip active={periodo === "14"} onClick={() => setPeriodo("14")}>Últimos 14 dias</Chip>
+          <Chip active={periodo === "30"} onClick={() => setPeriodo("30")}>Últimos 30 dias</Chip>
+          <Chip active={periodo === "semana"} onClick={() => setPeriodo("semana")}>Esta semana (seg–dom)</Chip>
+        </>}
       </div>
 
       <div className="grid lg:grid-cols-2 gap-4 mb-6">

@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { PageHeader, Btn, Modal, Field, inputCls, Tag, EmptyState, ProgressBar } from "@/components/ui-custom";
 import { PROJETO_STATUS, ensureDefaultTipos } from "@/lib/atividades-helpers";
+import { useSemanaFixada } from "@/hooks/use-semana-fixada";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/atividades/")({
@@ -18,7 +19,10 @@ function ProjetosPage() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<any>(null);
   const [view, setView] = useState<"lista" | "kanban">("lista");
-  const [filtroSemana, setFiltroSemana] = useState<string>("todas");
+  const { semanaFixada, setSemanaFixada } = useSemanaFixada();
+  // Default para a preferência do usuário; "todas" quando não há preferência.
+  const filtroSemana = semanaFixada ?? "todas";
+  const setFiltroSemana = (v: string) => setSemanaFixada(v === "todas" ? "" : v);
 
   useEffect(() => { ensureDefaultTipos(uid); }, [uid]);
 

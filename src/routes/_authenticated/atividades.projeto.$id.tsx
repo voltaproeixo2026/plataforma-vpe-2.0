@@ -28,7 +28,7 @@ function ProjetoDetail() {
 
   const { data: p } = useQuery({
     queryKey: ["projeto", id],
-    queryFn: async () => (await supabase.from("projetos").select("*, tipos_projeto(nome,cor), semanas(nome,data_inicio,data_fim), intencoes(titulo)").eq("id", id).maybeSingle()).data,
+    queryFn: async () => (await supabase.from("projetos").select("*, tipos_projeto(nome,cor), semanas(nome,data_inicio,data_fim), intencoes(titulo), projetos_recorrentes(id,titulo)").eq("id", id).maybeSingle()).data,
   });
   const { data: tarefas = [] } = useQuery({
     queryKey: ["tarefas_projeto", id],
@@ -38,12 +38,29 @@ function ProjetoDetail() {
     queryKey: ["registros_tempo", id],
     queryFn: async () => (await supabase.from("registros_tempo").select("*").eq("projeto_id", id).order("data", { ascending: false })).data ?? [],
   });
+  const { data: historicoSemanas = [] } = useQuery({
+    queryKey: ["projeto_semana_historico", id],
+    queryFn: async () => (await supabase.from("projeto_semana_historico").select("id, data_transicao, semanas(nome)").eq("projeto_id", id).order("data_transicao", { ascending: true })).data ?? [],
+  });
+  const { data: semanasList = [] } = useQuery({
+    queryKey: ["semanas-all-for-projeto", id],
+    queryFn: async () => (await supabase.from("semanas").select("id, nome, data_inicio, data_fim").order("data_inicio", { ascending: false })).data ?? [],
+  });
 
   const inv = () => {
     qc.invalidateQueries({ queryKey: ["projeto", id] });
     qc.invalidateQueries({ queryKey: ["tarefas_projeto", id] });
     qc.invalidateQueries({ queryKey: ["registros_tempo", id] });
+    qc.invalidateQueries({ queryKey: ["projeto_semana_historico", id] });
     qc.invalidateQueries({ queryKey: ["projetos"] });
+  };
+
+  const moverParaSemana = async (novaSemanaId: string) => {
+    if (!novaSemanaId) return;
+    const { error } = await supabase.from("projetos").update({ semana_id: novaSemanaId }).eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Projeto movido de semana");
+    inv();
   };
 
   const raiz = useMemo(() => tarefas.filter((t: any) => !t.parent_id), [tarefas]);
@@ -145,6 +162,39 @@ function ProjetoDetail() {
         <div className="text-xs text-text-tertiary font-mono mt-2">
           {tarefas.filter((t: any) => t.status === "concluida" && !filhasPor[t.id]).length} de {tarefas.filter((t: any) => !filhasPor[t.id]).length} tarefas-folha concluídas
         </div>
+      </div>
+
+      <div className="bg-bg-primary border border-border rounded-xl p-5 mb-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+          <div>
+            <div className="label-mono">Trajetória do projeto</div>
+            <div className="text-xs text-text-tertiary font-mono mt-1">
+              {historicoSemanas.length === 0
+                ? p.semanas?.nome
+                  ? <>Passou por: <span className="text-text-secondary">{p.semanas.nome}</span> (semana atual)</>
+                  : "Sem semana vinculada"
+                : <>Passou por: {historicoSemanas.map((h: any) => h.semanas?.nome ?? "—").join(" → ")}{p.semanas?.nome ? ` → ${p.semanas.nome} (atual)` : ""} · <span className="text-terracota">empurrado {historicoSemanas.length}×</span></>}
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-mono text-text-tertiary">Mover para:</span>
+            <select
+              className={inputCls + " !w-auto"}
+              value=""
+              onChange={(e) => moverParaSemana(e.target.value)}
+            >
+              <option value="">— semana —</option>
+              {semanasList.filter((s: any) => s.id !== p.semana_id).map((s: any) => (
+                <option key={s.id} value={s.id}>{s.nome}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+        {p.projetos_recorrentes?.id && (
+          <div className="text-xs font-mono text-terracota flex items-center gap-1 mt-1">
+            <Repeat size={12} /> instância de: {p.projetos_recorrentes.titulo}
+          </div>
+        )}
       </div>
 
       <div className="bg-bg-primary border border-border rounded-xl p-5 mb-6">
