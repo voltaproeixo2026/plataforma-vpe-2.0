@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { PageHeader, EmptyState, Chip, Btn, inputCls } from "@/components/ui-custom";
 import { fmtHoras, fmtDateBR, todayISO, addDays } from "@/lib/atividades";
+import { useSemanaFixada } from "@/hooks/use-semana-fixada";
 import { Pencil, X, Check } from "lucide-react";
 import { toast } from "sonner";
 
@@ -40,7 +41,22 @@ function TempoPage() {
   const qc = useQueryClient();
 
   const [periodo, setPeriodo] = useState<Periodo>("7");
-  const { inicio, fim } = useMemo(() => rangeFor(periodo), [periodo]);
+  const { semanaFixada, setSemanaFixada } = useSemanaFixada();
+
+  const { data: semanas = [] } = useQuery({
+    queryKey: ["semanas-todas-tempo", uid],
+    queryFn: async () => (await supabase.from("semanas").select("id, nome, data_inicio, data_fim").order("data_inicio", { ascending: false })).data ?? [],
+  });
+
+  const semanaSel = useMemo(
+    () => (semanaFixada ? semanas.find((s: any) => s.id === semanaFixada) ?? null : null),
+    [semanaFixada, semanas],
+  );
+
+  const { inicio, fim } = useMemo(() => {
+    if (semanaSel) return { inicio: semanaSel.data_inicio, fim: semanaSel.data_fim };
+    return rangeFor(periodo);
+  }, [periodo, semanaSel]);
 
   const { data: registros = [] } = useQuery({
     queryKey: ["tempo-registros", uid, inicio, fim],
