@@ -29,6 +29,7 @@ import { Route as AuthenticatedAcoesRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedAtividadesIndexRouteImport } from './routes/_authenticated/atividades.index'
 import { Route as AuthenticatedAtividadesTiposRouteImport } from './routes/_authenticated/atividades.tipos'
 import { Route as AuthenticatedAtividadesSemanasRouteImport } from './routes/_authenticated/atividades.semanas'
+import { Route as AuthenticatedAtividadesRecorrentesRouteImport } from './routes/_authenticated/atividades.recorrentes'
 import { Route as AuthenticatedAtividadesIntencoesRouteImport } from './routes/_authenticated/atividades.intencoes'
 import { Route as AuthenticatedAtividadesAgendaRouteImport } from './routes/_authenticated/atividades.agenda'
 import { Route as AuthenticatedAtividadesProjetoIdRouteImport } from './routes/_authenticated/atividades.projeto.$id'
@@ -137,6 +138,12 @@ const AuthenticatedAtividadesSemanasRoute =
     path: '/semanas',
     getParentRoute: () => AuthenticatedAtividadesRoute,
   } as any)
+const AuthenticatedAtividadesRecorrentesRoute =
+  AuthenticatedAtividadesRecorrentesRouteImport.update({
+    id: '/recorrentes',
+    path: '/recorrentes',
+    getParentRoute: () => AuthenticatedAtividadesRoute,
+  } as any)
 const AuthenticatedAtividadesIntencoesRoute =
   AuthenticatedAtividadesIntencoesRouteImport.update({
     id: '/intencoes',
@@ -175,6 +182,7 @@ export interface FileRoutesByFullPath {
   '/tempo': typeof AuthenticatedTempoRoute
   '/atividades/agenda': typeof AuthenticatedAtividadesAgendaRoute
   '/atividades/intencoes': typeof AuthenticatedAtividadesIntencoesRoute
+  '/atividades/recorrentes': typeof AuthenticatedAtividadesRecorrentesRoute
   '/atividades/semanas': typeof AuthenticatedAtividadesSemanasRoute
   '/atividades/tipos': typeof AuthenticatedAtividadesTiposRoute
   '/atividades/': typeof AuthenticatedAtividadesIndexRoute
@@ -198,6 +206,7 @@ export interface FileRoutesByTo {
   '/tempo': typeof AuthenticatedTempoRoute
   '/atividades/agenda': typeof AuthenticatedAtividadesAgendaRoute
   '/atividades/intencoes': typeof AuthenticatedAtividadesIntencoesRoute
+  '/atividades/recorrentes': typeof AuthenticatedAtividadesRecorrentesRoute
   '/atividades/semanas': typeof AuthenticatedAtividadesSemanasRoute
   '/atividades/tipos': typeof AuthenticatedAtividadesTiposRoute
   '/atividades': typeof AuthenticatedAtividadesIndexRoute
@@ -224,6 +233,7 @@ export interface FileRoutesById {
   '/_authenticated/tempo': typeof AuthenticatedTempoRoute
   '/_authenticated/atividades/agenda': typeof AuthenticatedAtividadesAgendaRoute
   '/_authenticated/atividades/intencoes': typeof AuthenticatedAtividadesIntencoesRoute
+  '/_authenticated/atividades/recorrentes': typeof AuthenticatedAtividadesRecorrentesRoute
   '/_authenticated/atividades/semanas': typeof AuthenticatedAtividadesSemanasRoute
   '/_authenticated/atividades/tipos': typeof AuthenticatedAtividadesTiposRoute
   '/_authenticated/atividades/': typeof AuthenticatedAtividadesIndexRoute
@@ -250,6 +260,7 @@ export interface FileRouteTypes {
     | '/tempo'
     | '/atividades/agenda'
     | '/atividades/intencoes'
+    | '/atividades/recorrentes'
     | '/atividades/semanas'
     | '/atividades/tipos'
     | '/atividades/'
@@ -273,6 +284,7 @@ export interface FileRouteTypes {
     | '/tempo'
     | '/atividades/agenda'
     | '/atividades/intencoes'
+    | '/atividades/recorrentes'
     | '/atividades/semanas'
     | '/atividades/tipos'
     | '/atividades'
@@ -298,6 +310,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tempo'
     | '/_authenticated/atividades/agenda'
     | '/_authenticated/atividades/intencoes'
+    | '/_authenticated/atividades/recorrentes'
     | '/_authenticated/atividades/semanas'
     | '/_authenticated/atividades/tipos'
     | '/_authenticated/atividades/'
@@ -454,6 +467,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAtividadesSemanasRouteImport
       parentRoute: typeof AuthenticatedAtividadesRoute
     }
+    '/_authenticated/atividades/recorrentes': {
+      id: '/_authenticated/atividades/recorrentes'
+      path: '/recorrentes'
+      fullPath: '/atividades/recorrentes'
+      preLoaderRoute: typeof AuthenticatedAtividadesRecorrentesRouteImport
+      parentRoute: typeof AuthenticatedAtividadesRoute
+    }
     '/_authenticated/atividades/intencoes': {
       id: '/_authenticated/atividades/intencoes'
       path: '/intencoes'
@@ -481,6 +501,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedAtividadesRouteChildren {
   AuthenticatedAtividadesAgendaRoute: typeof AuthenticatedAtividadesAgendaRoute
   AuthenticatedAtividadesIntencoesRoute: typeof AuthenticatedAtividadesIntencoesRoute
+  AuthenticatedAtividadesRecorrentesRoute: typeof AuthenticatedAtividadesRecorrentesRoute
   AuthenticatedAtividadesSemanasRoute: typeof AuthenticatedAtividadesSemanasRoute
   AuthenticatedAtividadesTiposRoute: typeof AuthenticatedAtividadesTiposRoute
   AuthenticatedAtividadesIndexRoute: typeof AuthenticatedAtividadesIndexRoute
@@ -492,6 +513,8 @@ const AuthenticatedAtividadesRouteChildren: AuthenticatedAtividadesRouteChildren
     AuthenticatedAtividadesAgendaRoute: AuthenticatedAtividadesAgendaRoute,
     AuthenticatedAtividadesIntencoesRoute:
       AuthenticatedAtividadesIntencoesRoute,
+    AuthenticatedAtividadesRecorrentesRoute:
+      AuthenticatedAtividadesRecorrentesRoute,
     AuthenticatedAtividadesSemanasRoute: AuthenticatedAtividadesSemanasRoute,
     AuthenticatedAtividadesTiposRoute: AuthenticatedAtividadesTiposRoute,
     AuthenticatedAtividadesIndexRoute: AuthenticatedAtividadesIndexRoute,
