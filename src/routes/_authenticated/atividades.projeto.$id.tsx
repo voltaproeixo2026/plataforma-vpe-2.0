@@ -51,7 +51,16 @@ function ProjetoDetail() {
     qc.invalidateQueries({ queryKey: ["projeto", id] });
     qc.invalidateQueries({ queryKey: ["tarefas_projeto", id] });
     qc.invalidateQueries({ queryKey: ["registros_tempo", id] });
+    qc.invalidateQueries({ queryKey: ["projeto_semana_historico", id] });
     qc.invalidateQueries({ queryKey: ["projetos"] });
+  };
+
+  const moverParaSemana = async (novaSemanaId: string) => {
+    if (!novaSemanaId) return;
+    const { error } = await supabase.from("projetos").update({ semana_id: novaSemanaId }).eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Projeto movido de semana");
+    inv();
   };
 
   const raiz = useMemo(() => tarefas.filter((t: any) => !t.parent_id), [tarefas]);
