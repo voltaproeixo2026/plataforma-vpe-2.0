@@ -45,7 +45,6 @@ function AtividadesLayout() {
 
   const tabs: { to: string; label: string; exact?: boolean }[] = [
   { to: "/atividades", label: "Projetos", exact: true },
-  { to: "/atividades/recorrentes", label: "Recorrentes" },
   { to: "/atividades/semanas", label: "Gerenciar ciclo" },
   { to: "/atividades/agenda", label: "Agenda" },
   { to: "/atividades/intencoes", label: "Intenções" },
