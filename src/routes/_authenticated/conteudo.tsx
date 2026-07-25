@@ -229,6 +229,7 @@ function ContentPage() {
 
 function ContentModal({ uid, editing, initialDate, onClose, onSaved }: any) {
   const e = editing ?? {};
+  const [id, setId] = useState<string | null>(e.id ?? null);
   const [title, setTitle] = useState(e.title ?? "");
   const [format, setFormat] = useState(e.format ?? "Post único");
   const [status, setStatus] = useState(e.status ?? "Ideias");
@@ -236,17 +237,50 @@ function ContentModal({ uid, editing, initialDate, onClose, onSaved }: any) {
   const [etapa, setEtapa] = useState(e.etapa ?? "roteiro");
   const [date, setDate] = useState(e.publish_date ?? initialDate ?? "");
   const [notes, setNotes] = useState(e.notes ?? "");
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const initial = useRef(true);
+  const idRef = useRef<string | null>(e.id ?? null);
 
-  const save = async () => {
+  const persist = async () => {
     if (!title.trim()) return;
+    setSaveState("saving");
     const payload = { title, format, status, funil, etapa, publish_date: date || null, notes };
-    if (editing?.id) await supabase.from("content_cards").update(payload).eq("id", editing.id);
-    else await supabase.from("content_cards").insert({ ...payload, user_id: uid });
-    toast.success(editing ? "Atualizado" : "Salvo"); onSaved(); onClose();
+    try {
+      if (idRef.current) {
+        const { error } = await supabase.from("content_cards").update(payload).eq("id", idRef.current);
+        if (error) throw error;
+      } else {
+        const { data, error } = await supabase.from("content_cards").insert({ ...payload, user_id: uid }).select("id").single();
+        if (error) throw error;
+        if (data?.id) { idRef.current = data.id; setId(data.id); }
+      }
+      setSaveState("saved");
+      onSaved();
+    } catch (err) {
+      setSaveState("error");
+      toast.error("Erro ao salvar");
+    }
   };
 
+  useEffect(() => {
+    if (initial.current) { initial.current = false; return; }
+    if (!title.trim()) return;
+    if (timer.current) clearTimeout(timer.current);
+    setSaveState("saving");
+    timer.current = setTimeout(() => { persist(); }, 800);
+    return () => { if (timer.current) clearTimeout(timer.current); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [title, format, status, funil, etapa, date, notes]);
+
+  const statusLabel =
+    saveState === "saving" ? "Salvando…" :
+    saveState === "saved" ? "✓ Alterações salvas" :
+    saveState === "error" ? "Erro ao salvar" :
+    title.trim() ? "" : "Digite um título para salvar";
+
   return (
-    <Modal open onClose={onClose} title={editing ? "Editar conteúdo" : "Novo conteúdo"} wide>
+    <Modal open onClose={onClose} title={id ? "Editar conteúdo" : "Novo conteúdo"} wide>
       <Field label="Título *"><input className={inputCls} value={title} onChange={(e) => setTitle(e.target.value)} autoFocus /></Field>
       <div className="grid md:grid-cols-2 gap-x-4">
         <Field label="Formato"><select className={inputCls} value={format} onChange={(e) => setFormat(e.target.value)}>{CONTENT_FORMATS.map(f => <option key={f}>{f}</option>)}</select></Field>
@@ -256,7 +290,13 @@ function ContentModal({ uid, editing, initialDate, onClose, onSaved }: any) {
         <Field label="Data de publicação"><input type="date" className={inputCls} value={date} onChange={(e) => setDate(e.target.value)} /></Field>
       </div>
       <Field label="Notas"><textarea className={inputCls} rows={4} value={notes} onChange={(e) => setNotes(e.target.value)} /></Field>
-      <div className="flex gap-2 justify-end mt-4"><Btn variant="ghost" onClick={onClose}>Cancelar</Btn><Btn onClick={save}>Salvar</Btn></div>
+      <div className="flex items-center justify-between mt-4">
+        <div className={`text-xs font-mono ${saveState === "error" ? "text-red-500" : "text-text-tertiary"}`}>{statusLabel}</div>
+        <div className="flex gap-2">
+          <Btn variant="ghost" onClick={onClose}>Fechar</Btn>
+          <Btn onClick={persist} disabled={!title.trim() || saveState === "saving"}>Salvar agora</Btn>
+        </div>
+      </div>
     </Modal>
   );
 }
