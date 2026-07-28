@@ -236,7 +236,10 @@ function ContentModal({ uid, editing, initialDate, onClose, onSaved }: any) {
   const [funil, setFunil] = useState(e.funil ?? "atracao");
   const [etapa, setEtapa] = useState(e.etapa ?? "roteiro");
   const [date, setDate] = useState(e.publish_date ?? initialDate ?? "");
+  const [linkRef, setLinkRef] = useState(e.link_referencia ?? "");
   const [notes, setNotes] = useState(e.notes ?? "");
+  const [desenvolvimento, setDesenvolvimento] = useState(e.desenvolvimento ?? "");
+  const [cta, setCta] = useState(e.cta ?? "");
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const initial = useRef(true);
