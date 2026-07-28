@@ -248,7 +248,7 @@ function ContentModal({ uid, editing, initialDate, onClose, onSaved }: any) {
   const persist = async () => {
     if (!title.trim()) return;
     setSaveState("saving");
-    const payload = { title, format, status, funil, etapa, publish_date: date || null, notes };
+    const payload = { title, format, status, funil, etapa, publish_date: date || null, link_referencia: linkRef || null, notes, desenvolvimento, cta };
     try {
       if (idRef.current) {
         const { error } = await supabase.from("content_cards").update(payload).eq("id", idRef.current);
