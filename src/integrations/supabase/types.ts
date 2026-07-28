@@ -64,6 +64,7 @@ export type Database = {
           category: string
           created_at: string
           id: string
+          pilar_id: string | null
           raw_content: string
           tags: string[]
           updated_at: string
@@ -73,6 +74,7 @@ export type Database = {
           category: string
           created_at?: string
           id?: string
+          pilar_id?: string | null
           raw_content?: string
           tags?: string[]
           updated_at?: string
@@ -82,12 +84,21 @@ export type Database = {
           category?: string
           created_at?: string
           id?: string
+          pilar_id?: string | null
           raw_content?: string
           tags?: string[]
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "arsenal_entries_pilar_id_fkey"
+            columns: ["pilar_id"]
+            isOneToOne: false
+            referencedRelation: "pilares_conteudo"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       autenticidade_maps: {
         Row: {
@@ -251,11 +262,13 @@ export type Database = {
       content_cards: {
         Row: {
           created_at: string
+          cta: string | null
           desenvolvimento: string | null
           etapa: string | null
           format: string
           funil: string | null
           id: string
+          link_referencia: string | null
           notes: string | null
           publish_date: string | null
           status: string
@@ -264,11 +277,13 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          cta?: string | null
           desenvolvimento?: string | null
           etapa?: string | null
           format?: string
           funil?: string | null
           id?: string
+          link_referencia?: string | null
           notes?: string | null
           publish_date?: string | null
           status?: string
@@ -277,11 +292,13 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          cta?: string | null
           desenvolvimento?: string | null
           etapa?: string | null
           format?: string
           funil?: string | null
           id?: string
+          link_referencia?: string | null
           notes?: string | null
           publish_date?: string | null
           status?: string
@@ -441,6 +458,33 @@ export type Database = {
           periodo_fim?: string | null
           periodo_inicio?: string
           titulo?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      pilares_conteudo: {
+        Row: {
+          created_at: string
+          descricao: string | null
+          id: string
+          nome: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome?: string
           updated_at?: string
           user_id?: string
         }

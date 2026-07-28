@@ -236,7 +236,10 @@ function ContentModal({ uid, editing, initialDate, onClose, onSaved }: any) {
   const [funil, setFunil] = useState(e.funil ?? "atracao");
   const [etapa, setEtapa] = useState(e.etapa ?? "roteiro");
   const [date, setDate] = useState(e.publish_date ?? initialDate ?? "");
+  const [linkRef, setLinkRef] = useState(e.link_referencia ?? "");
   const [notes, setNotes] = useState(e.notes ?? "");
+  const [desenvolvimento, setDesenvolvimento] = useState(e.desenvolvimento ?? "");
+  const [cta, setCta] = useState(e.cta ?? "");
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const initial = useRef(true);
@@ -245,7 +248,7 @@ function ContentModal({ uid, editing, initialDate, onClose, onSaved }: any) {
   const persist = async () => {
     if (!title.trim()) return;
     setSaveState("saving");
-    const payload = { title, format, status, funil, etapa, publish_date: date || null, notes };
+    const payload = { title, format, status, funil, etapa, publish_date: date || null, link_referencia: linkRef || null, notes, desenvolvimento, cta };
     try {
       if (idRef.current) {
         const { error } = await supabase.from("content_cards").update(payload).eq("id", idRef.current);
@@ -271,7 +274,7 @@ function ContentModal({ uid, editing, initialDate, onClose, onSaved }: any) {
     timer.current = setTimeout(() => { persist(); }, 800);
     return () => { if (timer.current) clearTimeout(timer.current); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [title, format, status, funil, etapa, date, notes]);
+  }, [title, format, status, funil, etapa, date, linkRef, notes, desenvolvimento, cta]);
 
   const statusLabel =
     saveState === "saving" ? "Salvando…" :
@@ -289,7 +292,10 @@ function ContentModal({ uid, editing, initialDate, onClose, onSaved }: any) {
         <Field label="Etapa"><select className={inputCls} value={etapa} onChange={(e) => setEtapa(e.target.value)}>{CONTENT_ETAPAS.map(e => <option key={e}>{e}</option>)}</select></Field>
         <Field label="Data de publicação"><input type="date" className={inputCls} value={date} onChange={(e) => setDate(e.target.value)} /></Field>
       </div>
-      <Field label="Legendas"><textarea className={inputCls} rows={4} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Cole ou escreva aqui a legenda do conteúdo" /></Field>
+      <Field label="Link de referência"><input type="url" className={inputCls} value={linkRef} onChange={(e) => setLinkRef(e.target.value)} placeholder="https://..." /></Field>
+      <Field label="Legenda"><textarea className={inputCls} rows={4} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Cole ou escreva aqui a legenda do conteúdo" /></Field>
+      <Field label="Desenvolvimento"><textarea className={inputCls} rows={5} value={desenvolvimento} onChange={(e) => setDesenvolvimento(e.target.value)} placeholder="Roteiro, estrutura e desenvolvimento da ideia" /></Field>
+      <Field label="CTA"><textarea className={inputCls} rows={3} value={cta} onChange={(e) => setCta(e.target.value)} placeholder="Chamada para ação deste conteúdo" /></Field>
       <div className="flex items-center justify-between mt-4">
         <div className={`text-xs font-mono ${saveState === "error" ? "text-red-500" : "text-text-tertiary"}`}>{statusLabel}</div>
         <div className="flex gap-2">
