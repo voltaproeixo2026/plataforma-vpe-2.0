@@ -30,6 +30,8 @@ function ContentPage() {
   const [funilFilter, setFunilFilter] = useState<string>("todos");
   const [etapaFilter, setEtapaFilter] = useState<string>("todos");
   const [mref, setMref] = useState(monthRef());
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [dragOverDate, setDragOverDate] = useState<string | null>(null);
 
   const SECTIONS: { key: Section; label: string }[] = [
     { key: "planejamento", label: "📅 Planejamento" },
@@ -192,8 +194,15 @@ function ContentPage() {
               const iso = d ? `${y}-${String(m).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}` : "";
               const items = d ? (byDate[iso] ?? []) : [];
               const isToday = iso === todayStr;
+              const isDragOver = !!d && dragOverDate === iso;
               return (
-                <div key={i} className={`min-h-[110px] border-r border-b border-border last:border-r-0 p-1.5 ${d ? "" : "bg-bg-secondary/40"} ${isToday ? "bg-terracota/5" : ""}`}>
+                <div
+                  key={i}
+                  onDragOver={(ev) => { if (!d || !dragId) return; ev.preventDefault(); ev.dataTransfer.dropEffect = "move"; if (dragOverDate !== iso) setDragOverDate(iso); }}
+                  onDragLeave={() => { if (dragOverDate === iso) setDragOverDate(null); }}
+                  onDrop={(ev) => { if (!d) return; ev.preventDefault(); moveCard(dragId, iso); }}
+                  className={`min-h-[110px] border-r border-b border-border last:border-r-0 p-1.5 transition ${d ? "" : "bg-bg-secondary/40"} ${isToday ? "bg-terracota/5" : ""} ${isDragOver ? "bg-terracota/15 ring-1 ring-inset ring-terracota" : ""}`}
+                >
                   {d && (
                     <>
                       <div className="flex items-center justify-between mb-1">
@@ -204,7 +213,15 @@ function ContentPage() {
                         {items.map((c: any) => {
                           const fun = CONTENT_FUNIS.find(f => f.key === c.funil);
                           return (
-                            <button key={c.id} onClick={() => { setEditing(c); setOpen(true); }} style={{ background: fun?.color ?? "var(--bg-secondary)", color: "#fff" }} className="w-full text-left text-[10px] rounded px-1.5 py-1 hover:opacity-80 truncate block">
+                            <button
+                              key={c.id}
+                              draggable
+                              onDragStart={(ev) => { setDragId(c.id); ev.dataTransfer.effectAllowed = "move"; ev.dataTransfer.setData("text/plain", c.id); }}
+                              onDragEnd={() => { setDragId(null); setDragOverDate(null); }}
+                              onClick={() => { setEditing(c); setOpen(true); }}
+                              style={{ background: fun?.color ?? "var(--bg-secondary)", color: "#fff" }}
+                              className={`w-full text-left text-[10px] rounded px-1.5 py-1 hover:opacity-80 truncate block cursor-grab active:cursor-grabbing ${dragId === c.id ? "opacity-40" : ""}`}
+                            >
                               <div className="truncate font-medium">{c.title}</div>
                               <div className="truncate opacity-80">{c.format}{c.status === "Publicado" ? " ✓" : ""}</div>
                             </button>
