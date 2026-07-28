@@ -274,7 +274,7 @@ function ContentModal({ uid, editing, initialDate, onClose, onSaved }: any) {
     timer.current = setTimeout(() => { persist(); }, 800);
     return () => { if (timer.current) clearTimeout(timer.current); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [title, format, status, funil, etapa, date, notes]);
+  }, [title, format, status, funil, etapa, date, linkRef, notes, desenvolvimento, cta]);
 
   const statusLabel =
     saveState === "saving" ? "Salvando…" :
