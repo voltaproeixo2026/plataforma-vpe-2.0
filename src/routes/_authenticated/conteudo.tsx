@@ -51,6 +51,16 @@ function ContentPage() {
 
   const inv = () => qc.invalidateQueries({ queryKey: ["content"] });
   const remove = async (id: string) => { await supabase.from("content_cards").delete().eq("id", id); toast.success("Removido"); inv(); };
+  const moveCard = async (id: string | null, iso: string) => {
+    setDragId(null);
+    setDragOverDate(null);
+    if (!id) return;
+    const card = cards.find((c: any) => c.id === id);
+    if (!card || card.publish_date === iso) return;
+    await supabase.from("content_cards").update({ publish_date: iso }).eq("id", id);
+    toast.success(`Movido para ${new Date(iso + "T12:00").toLocaleDateString("pt-BR")}`);
+    inv();
+  };
   const advance = async (c: any) => {
     const idx = CONTENT_STATUSES.indexOf(c.status);
     if (idx >= CONTENT_STATUSES.length - 1) return;
