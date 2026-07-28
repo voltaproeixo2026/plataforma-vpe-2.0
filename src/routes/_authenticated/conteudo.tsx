@@ -292,7 +292,10 @@ function ContentModal({ uid, editing, initialDate, onClose, onSaved }: any) {
         <Field label="Etapa"><select className={inputCls} value={etapa} onChange={(e) => setEtapa(e.target.value)}>{CONTENT_ETAPAS.map(e => <option key={e}>{e}</option>)}</select></Field>
         <Field label="Data de publicação"><input type="date" className={inputCls} value={date} onChange={(e) => setDate(e.target.value)} /></Field>
       </div>
-      <Field label="Legendas"><textarea className={inputCls} rows={4} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Cole ou escreva aqui a legenda do conteúdo" /></Field>
+      <Field label="Link de referência"><input type="url" className={inputCls} value={linkRef} onChange={(e) => setLinkRef(e.target.value)} placeholder="https://..." /></Field>
+      <Field label="Legenda"><textarea className={inputCls} rows={4} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Cole ou escreva aqui a legenda do conteúdo" /></Field>
+      <Field label="Desenvolvimento"><textarea className={inputCls} rows={5} value={desenvolvimento} onChange={(e) => setDesenvolvimento(e.target.value)} placeholder="Roteiro, estrutura e desenvolvimento da ideia" /></Field>
+      <Field label="CTA"><textarea className={inputCls} rows={3} value={cta} onChange={(e) => setCta(e.target.value)} placeholder="Chamada para ação deste conteúdo" /></Field>
       <div className="flex items-center justify-between mt-4">
         <div className={`text-xs font-mono ${saveState === "error" ? "text-red-500" : "text-text-tertiary"}`}>{statusLabel}</div>
         <div className="flex gap-2">
