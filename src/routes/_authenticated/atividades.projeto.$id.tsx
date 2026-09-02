@@ -101,7 +101,8 @@ function ProjetoDetail() {
   };
 
   const updateTarefa = async (tid: string, patch: any) => {
-    await supabase.from("tarefas_projeto").update(patch).eq("id", tid);
+    const { error } = await supabase.from("tarefas_projeto").update(patch).eq("id", tid);
+    if (error) return toast.error(error.message);
     inv();
   };
 
